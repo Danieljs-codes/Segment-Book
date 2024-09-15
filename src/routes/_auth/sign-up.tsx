@@ -4,23 +4,64 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signUpSchema } from "~lib/schema";
 import type { z } from "zod";
 import { TextField } from "~ui/text-field";
-import { IconBrandGoogle, IconCircleCheckFill } from "justd-icons";
+import {
+	IconBrandGoogle,
+	IconCircleCheckFill,
+	IconEye,
+	IconEyeOff,
+} from "justd-icons";
 import { Button } from "~ui/button";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "~ui/primitive";
 import { useMutation } from "@tanstack/react-query";
+import { supabase } from "~lib/supabase";
+import { Loader } from "~ui/loader";
+import { useAuth } from "~lib/auth";
+import { toast } from "sonner";
+import { flushSync } from "react-dom";
 
 export const Route = createFileRoute("/_auth/sign-up")({
 	component: SignUpComponent,
 });
 
 function SignUpComponent() {
-	const { mutate } = useMutation({
+	const { updateSession } = useAuth();
+	const navigate = Route.useNavigate();
+	const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+	const { mutate, isPending, error } = useMutation({
 		mutationKey: ["sign-up"],
 		mutationFn: async (data: z.infer<typeof signUpSchema>) => {
-			console.log(data);
+			const { data: authData, error: authError } = await supabase.auth.signUp({
+				email: data.email,
+				password: data.password,
+				options: {
+					data: {
+						full_name: data.fullName,
+						country: "Nigeria",
+					},
+				},
+			});
+			if (authError) {
+				console.log(authError);
+				throw authError;
+			}
+
+			return authData;
+		},
+		onSuccess: (data) => {
+			// Forcing react to update state which update the context before navigating
+			flushSync(() => {
+				updateSession(data.session);
+			});
+			toast.success("Sign up successful!");
+			navigate({ to: "/" });
+		},
+
+		onError: (error) => {
+			toast.error(error.message);
 		},
 	});
+
 	const { handleSubmit, control, watch } = useForm<
 		z.infer<typeof signUpSchema>
 	>({
@@ -55,6 +96,13 @@ function SignUpComponent() {
 					Start your 30-day free trial.
 				</p>
 			</div>
+			{error && (
+				<div className="text-error text-sm mb-4">
+					{error instanceof Error
+						? error.message
+						: "An error occurred during sign up."}
+				</div>
+			)}
 			<form
 				onSubmit={handleSubmit(onSubmit)}
 				id="sign-up-form"
@@ -94,10 +142,19 @@ function SignUpComponent() {
 						<TextField
 							label="Password"
 							placeholder="Enter your password"
-							type="password"
+							type={isPasswordVisible ? "text" : "password"}
 							isInvalid={!!error}
 							errorMessage={error?.message}
 							{...field}
+							suffix={
+								<Button
+									size="square-petite"
+									appearance="plain"
+									onPress={() => setIsPasswordVisible((v) => !v)}
+								>
+									{isPasswordVisible ? <IconEyeOff /> : <IconEye />}
+								</Button>
+							}
 						/>
 					)}
 				/>
@@ -132,8 +189,9 @@ function SignUpComponent() {
 					size="small"
 					type="submit"
 					className="w-full"
+					isDisabled={isPending}
 				>
-					Get started
+					{isPending ? <Loader variant="spin" /> : "Get started"}
 				</Button>
 				<Button
 					size="small"

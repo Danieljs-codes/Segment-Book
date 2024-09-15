@@ -34,7 +34,13 @@ function InnerApp() {
 		<RouterProvider
 			router={router}
 			context={{ auth }}
-			Wrap={({ children }) => <ThemeProvider>{children}</ThemeProvider>}
+			Wrap={({ children }) => (
+				<ThemeProvider>
+					<QueryClientProvider client={queryClient}>
+						{children}
+					</QueryClientProvider>
+				</ThemeProvider>
+			)}
 		/>
 	);
 }

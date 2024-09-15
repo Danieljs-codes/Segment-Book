@@ -13,6 +13,10 @@ const config = withTV({
 			},
 		},
 		extend: {
+			fontFamily: {
+				sans: ["Geist", "sans-serif"],
+				mono: ["Geist Mono", "monospace"],
+			},
 			colors: {
 				light: "oklch(var(--light) / <alpha-value>)",
 				dark: "oklch(var(--dark) / <alpha-value>)",
