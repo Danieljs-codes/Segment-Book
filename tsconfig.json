@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "~ui/*": ["./src/components/ui/*"],
+      "~lib/*": ["./src/lib/*"],
+      "~/*": ["./src/*"]
+    }
+  }
+}
