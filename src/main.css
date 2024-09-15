@@ -118,12 +118,24 @@ input[data-autocompleted] {
 	background-color: transparent;
 }
 
-:root {
-	font-family: Inter, sans-serif;
-	font-feature-settings: "liga" 1, "calt" 1; /* fix for Chrome */
+@font-face {
+	font-family: "Geist";
+	src: url(./assets/fonts/GeistVF.woff2) format("woff2-variations"),
+		url(./assets/fonts/GeistVF.woff) format("woff-variations");
+	font-weight: 100 900;
+	font-stretch: 75% 125%;
+	font-style: normal;
 }
-@supports (font-variation-settings: normal) {
-	:root {
-		font-family: InterVariable, sans-serif;
-	}
+
+@font-face {
+	font-family: "Geist Mono";
+	src: url(./assets/fonts/GeistMonoVF.woff2) format("woff2-variations"),
+		url(./assets/fonts/GeistMonoVF.woff) format("woff-variations");
+	font-weight: 100 900;
+	font-stretch: 75% 125%;
+	font-style: normal;
+}
+
+:root {
+	font-family: Geist, sans-serif;
 }

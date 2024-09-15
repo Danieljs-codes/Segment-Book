@@ -4,6 +4,8 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "~lib/auth";
+import { StrictMode } from "react";
+import { ThemeProvider } from "~components/theme-provider";
 
 export const queryClient = new QueryClient();
 
@@ -24,26 +26,32 @@ declare module "@tanstack/react-router" {
 	}
 }
 
-const rootElement = document.getElementById("app");
+const rootElement = document.getElementById("app")!;
 
-function App() {
+function InnerApp() {
 	const auth = useAuth();
 	return (
 		<RouterProvider
 			router={router}
 			context={{ auth }}
-			Wrap={({ children }) => <AuthProvider>{children}</AuthProvider>}
+			Wrap={({ children }) => <ThemeProvider>{children}</ThemeProvider>}
 		/>
 	);
 }
 
-if (rootElement) {
-	if (!rootElement.innerHTML) {
-		const root = ReactDOM.createRoot(rootElement);
-		root.render(
-			<QueryClientProvider client={queryClient}>
-				<App />
-			</QueryClientProvider>,
-		);
-	}
+function App() {
+	return (
+		<AuthProvider>
+			<InnerApp />
+		</AuthProvider>
+	);
+}
+
+if (!rootElement.innerHTML) {
+	const root = ReactDOM.createRoot(rootElement);
+	root.render(
+		<StrictMode>
+			<App />
+		</StrictMode>,
+	);
 }

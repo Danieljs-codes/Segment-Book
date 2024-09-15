@@ -8,6 +8,7 @@
     "moduleResolution": "Bundler",
     "paths": {
       "~ui/*": ["./src/components/ui/*"],
+      "~components/*": ["./src/components/*"],
       "~lib/*": ["./src/lib/*"],
       "~/*": ["./src/*"]
     }
