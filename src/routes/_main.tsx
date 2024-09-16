@@ -10,12 +10,14 @@ import {
 	IconSearch,
 	IconSettings,
 } from "justd-icons";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Logo } from "~components/logo";
 import { useAuth } from "~lib/auth";
 import { Avatar } from "~ui/avatar";
 import { Button, buttonStyles } from "~ui/button";
 import { Menu } from "~ui/menu";
+import { Sheet } from "~ui/sheet";
 
 const routes = [
 	{
@@ -59,6 +61,7 @@ export const Route = createFileRoute("/_main")({
 });
 
 function MainLayout() {
+	const [isSheetOpen, setIsSheetOpen] = useState(false);
 	const { isLoading } = useAuth();
 	const { session } = Route.useRouteContext();
 	const matches = useMatches();
@@ -138,7 +141,12 @@ function MainLayout() {
 					</div>
 				</div>
 				{/* Mobile Icon */}
-				<Button className="md:hidden" size="square-petite" appearance="plain">
+				<Button
+					onPress={() => setIsSheetOpen(true)}
+					className="md:hidden"
+					size="square-petite"
+					appearance="plain"
+				>
 					<IconHamburger />
 					<span className="sr-only">Open menu</span>
 				</Button>
@@ -175,6 +183,80 @@ function MainLayout() {
 			<div className="px-4">
 				<Outlet />
 			</div>
+			{/* Sheet */}
+			<Sheet>
+				<Sheet.Content
+					isOpen={isSheetOpen}
+					onOpenChange={setIsSheetOpen}
+					isBlurred
+					side="left"
+				>
+					<Sheet.Header className="mb-6">
+						<div className="flex items-center">
+							<Logo className="h-8 w-auto" />
+						</div>
+					</Sheet.Header>
+					<Sheet.Body className="gap-1">
+						{routes.map((route) => (
+							<Link
+								key={route.path}
+								to={route.path}
+								className={buttonStyles({
+									appearance: "plain",
+									size: "small",
+									className: "text-left justify-normal",
+								})}
+								activeProps={{
+									className: "bg-fg/5",
+								}}
+							>
+								{route.title}
+							</Link>
+						))}
+					</Sheet.Body>
+					<Sheet.Footer>
+						<Menu>
+							<Menu.Trigger>
+								<div className="flex justify-between">
+									<div className="flex items-center gap-x-3">
+										<Avatar
+											src={`https://i.pravatar.cc/300?u=${session?.user?.email}`}
+										/>
+										<div>
+											<span className="text-sm font-medium text-fg block -mb-1.5">
+												{session.user.user_metadata?.full_name}
+											</span>
+											<span className="text-muted-fg text-xs">
+												{session.user.email}
+											</span>
+										</div>
+									</div>
+									<IconLogout className="size-5 text-muted-fg" />
+								</div>
+							</Menu.Trigger>
+							<Menu.Content className="min-w-[180px]">
+								<Menu.Item>
+									<IconContacts />
+									Profile
+								</Menu.Item>
+								<Menu.Item>
+									<IconSettings />
+									Settings
+								</Menu.Item>
+								<Menu.Item>
+									<IconLogout />
+									Sign out
+								</Menu.Item>
+								<Menu.Separator />
+								<Menu.Item isDanger>
+									<IconFolderDelete />
+									Delete Account
+								</Menu.Item>
+							</Menu.Content>
+						</Menu>
+					</Sheet.Footer>
+				</Sheet.Content>
+			</Sheet>
 		</div>
 	);
 }
