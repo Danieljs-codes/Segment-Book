@@ -20,6 +20,8 @@ import { useAuth } from "~lib/auth";
 import { toast } from "sonner";
 import { flushSync } from "react-dom";
 import { linkStyles } from "~ui/link";
+import { ComboBox } from "~ui/combo-box";
+import { countries } from "~lib/processed-countries";
 
 export const Route = createFileRoute("/_auth/sign-up")({
 	component: SignUpComponent,
@@ -38,7 +40,7 @@ function SignUpComponent() {
 				options: {
 					data: {
 						full_name: data.fullName,
-						country: "Nigeria",
+						country: data.country.toLowerCase(),
 					},
 				},
 			});
@@ -71,6 +73,7 @@ function SignUpComponent() {
 			fullName: "",
 			email: "",
 			password: "",
+			country: "",
 		},
 	});
 
@@ -157,6 +160,33 @@ function SignUpComponent() {
 								</Button>
 							}
 						/>
+					)}
+				/>
+				<Controller
+					control={control}
+					name="country"
+					render={({ field, fieldState: { error } }) => (
+						<ComboBox
+							placeholder="Select your country"
+							label="Country"
+							{...field}
+							isInvalid={!!error}
+							errorMessage={error?.message}
+						>
+							<ComboBox.Input />
+							<ComboBox.List items={Object.values(countries)}>
+								{(item) => (
+									<ComboBox.Option id={item.name} textValue={item.name}>
+										<img
+											src={item.flag}
+											alt={`${item.name} flag`}
+											className="w-5"
+										/>
+										{item.name}
+									</ComboBox.Option>
+								)}
+							</ComboBox.List>
+						</ComboBox>
 					)}
 				/>
 			</form>
