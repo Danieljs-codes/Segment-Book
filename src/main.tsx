@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "~lib/auth";
 import { StrictMode } from "react";
 import { ThemeProvider } from "~components/theme-provider";
+import nProgress from "nprogress";
 
 export const queryClient = new QueryClient();
 
@@ -52,6 +53,14 @@ function App() {
 		</AuthProvider>
 	);
 }
+
+nProgress.configure({ showSpinner: false });
+
+router.subscribe(
+	"onBeforeLoad",
+	({ pathChanged }) => pathChanged && nProgress.start(),
+);
+router.subscribe("onLoad", () => nProgress.done());
 
 if (!rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);

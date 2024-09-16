@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signUpSchema } from "~lib/schema";
@@ -19,6 +19,7 @@ import { Loader } from "~ui/loader";
 import { useAuth } from "~lib/auth";
 import { toast } from "sonner";
 import { flushSync } from "react-dom";
+import { linkStyles } from "~ui/link";
 
 export const Route = createFileRoute("/_auth/sign-up")({
 	component: SignUpComponent,
@@ -203,6 +204,18 @@ function SignUpComponent() {
 					Sign up with Google
 				</Button>
 			</div>
+			<p className="text-sm text-muted-fg text-center mt-6">
+				Already have an account?{" "}
+				<Link
+					className={linkStyles({
+						intent: "primary",
+						className: "font-medium",
+					})}
+					to="/sign-in"
+				>
+					Sign in
+				</Link>
+			</p>
 		</div>
 	);
 }
