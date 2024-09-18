@@ -20,5 +20,4 @@ export const signUpSchema = z.object({
     .regex(/.*[@$!%*?&].*/, {
       message: "Password must contain at least one special character (@$!%*?&)",
     }),
-    country: z.string().min(1, { message: "Country is required" }),
 });

@@ -9,44 +9,159 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      cards: {
+      _prisma_migrations: {
         Row: {
-          card_holder_name: string
-          card_number: string
-          card_type: string
-          created_at: string | null
-          expiration_date: string
+          applied_steps_count: number
+          checksum: string
+          finished_at: string | null
           id: string
-          is_default: boolean | null
-          updated_at: string | null
-          user_id: string
+          logs: string | null
+          migration_name: string
+          rolled_back_at: string | null
+          started_at: string
         }
         Insert: {
-          card_holder_name: string
-          card_number: string
-          card_type: string
-          created_at?: string | null
-          expiration_date: string
-          id?: string
-          is_default?: boolean | null
-          updated_at?: string | null
-          user_id: string
+          applied_steps_count?: number
+          checksum: string
+          finished_at?: string | null
+          id: string
+          logs?: string | null
+          migration_name: string
+          rolled_back_at?: string | null
+          started_at?: string
         }
         Update: {
-          card_holder_name?: string
-          card_number?: string
-          card_type?: string
-          created_at?: string | null
-          expiration_date?: string
+          applied_steps_count?: number
+          checksum?: string
+          finished_at?: string | null
           id?: string
-          is_default?: boolean | null
-          updated_at?: string | null
-          user_id?: string
+          logs?: string | null
+          migration_name?: string
+          rolled_back_at?: string | null
+          started_at?: string
+        }
+        Relationships: []
+      }
+      books: {
+        Row: {
+          author: string
+          description: string | null
+          id: string
+          isDonated: boolean
+          ownerId: string
+          title: string
+        }
+        Insert: {
+          author: string
+          description?: string | null
+          id?: string
+          isDonated?: boolean
+          ownerId: string
+          title: string
+        }
+        Update: {
+          author?: string
+          description?: string | null
+          id?: string
+          isDonated?: boolean
+          ownerId?: string
+          title?: string
         }
         Relationships: [
           {
-            foreignKeyName: "cards_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "books_ownerId_fkey"
+            columns: ["ownerId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      donation_requests: {
+        Row: {
+          bookId: string
+          createdAt: string
+          donorId: string
+          id: string
+          requesterId: string
+          status: Database["public"]["Enums"]["RequestStatus"]
+          updatedAt: string
+        }
+        Insert: {
+          bookId: string
+          createdAt?: string
+          donorId: string
+          id?: string
+          requesterId: string
+          status?: Database["public"]["Enums"]["RequestStatus"]
+          updatedAt: string
+        }
+        Update: {
+          bookId?: string
+          createdAt?: string
+          donorId?: string
+          id?: string
+          requesterId?: string
+          status?: Database["public"]["Enums"]["RequestStatus"]
+          updatedAt?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donation_requests_bookId_fkey"
+            columns: ["bookId"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "donation_requests_donorId_fkey"
+            columns: ["donorId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "donation_requests_requesterId_fkey"
+            columns: ["requesterId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          createdAt: string
+          id: string
+          recipientId: string
+          senderId: string
+        }
+        Insert: {
+          content: string
+          createdAt?: string
+          id?: string
+          recipientId: string
+          senderId: string
+        }
+        Update: {
+          content?: string
+          createdAt?: string
+          id?: string
+          recipientId?: string
+          senderId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_recipientId_fkey"
+            columns: ["recipientId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_senderId_fkey"
+            columns: ["senderId"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -55,81 +170,33 @@ export type Database = {
       }
       notifications: {
         Row: {
-          created_at: string | null
+          content: string
+          createdAt: string
           id: string
-          is_read: boolean | null
-          message: string
-          type: string
-          user_id: string
+          isRead: boolean
+          type: Database["public"]["Enums"]["NotificationType"]
+          userId: string
         }
         Insert: {
-          created_at?: string | null
+          content: string
+          createdAt?: string
           id?: string
-          is_read?: boolean | null
-          message: string
-          type: string
-          user_id: string
+          isRead?: boolean
+          type: Database["public"]["Enums"]["NotificationType"]
+          userId: string
         }
         Update: {
-          created_at?: string | null
+          content?: string
+          createdAt?: string
           id?: string
-          is_read?: boolean | null
-          message?: string
-          type?: string
-          user_id?: string
+          isRead?: boolean
+          type?: Database["public"]["Enums"]["NotificationType"]
+          userId?: string
         }
         Relationships: [
           {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      transactions: {
-        Row: {
-          amount: number
-          created_at: string | null
-          currency: string
-          id: string
-          recipient_id: string
-          sender_id: string
-          status: string
-          updated_at: string | null
-        }
-        Insert: {
-          amount: number
-          created_at?: string | null
-          currency: string
-          id?: string
-          recipient_id: string
-          sender_id: string
-          status: string
-          updated_at?: string | null
-        }
-        Update: {
-          amount?: number
-          created_at?: string | null
-          currency?: string
-          id?: string
-          recipient_id?: string
-          sender_id?: string
-          status?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "transactions_recipient_id_fkey"
-            columns: ["recipient_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transactions_sender_id_fkey"
-            columns: ["sender_id"]
+            foreignKeyName: "notifications_userId_fkey"
+            columns: ["userId"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -138,28 +205,22 @@ export type Database = {
       }
       users: {
         Row: {
-          country: string
-          created_at: string | null
+          authUserId: string
           email: string
-          full_name: string
           id: string
-          updated_at: string | null
+          name: string
         }
         Insert: {
-          country: string
-          created_at?: string | null
+          authUserId: string
           email: string
-          full_name: string
           id?: string
-          updated_at?: string | null
+          name: string
         }
         Update: {
-          country?: string
-          created_at?: string | null
+          authUserId?: string
           email?: string
-          full_name?: string
           id?: string
-          updated_at?: string | null
+          name?: string
         }
         Relationships: []
       }
@@ -168,10 +229,36 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_active_requests_received: {
+        Args: {
+          user_id: string
+        }
+        Returns: {
+          donation_request_id: string
+          book_title: string
+          book_author: string
+          requester_name: string
+          request_date: string
+          status: string
+        }[]
+      }
+      get_active_requests_sent: {
+        Args: {
+          user_id: string
+        }
+        Returns: {
+          donation_request_id: string
+          book_title: string
+          book_author: string
+          donor_name: string
+          request_date: string
+          status: string
+        }[]
+      }
     }
     Enums: {
-      [_ in never]: never
+      NotificationType: "DONATION_REQUEST"
+      RequestStatus: "PENDING" | "ACCEPTED" | "REJECTED" | "COMPLETED"
     }
     CompositeTypes: {
       [_ in never]: never

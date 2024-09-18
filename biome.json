@@ -21,7 +21,9 @@
 		"rules": {
 			"recommended": true,
 			"style": {
-				"noNonNullAssertion": "off"
+				"noNonNullAssertion": "off",
+				"useSelfClosingElements": "off",
+				"noUnusedTemplateLiteral": "off"
 			},
 			"suspicious": {
 				"noExplicitAny": "off"

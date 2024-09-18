@@ -1,40 +1,57 @@
-import { isMatch, Link, useMatches } from "@tanstack/react-router";
+import IconHandCoin from "~/assets/hand-coins.svg?react";
+import { isMatch, Link, useLocation, useMatches } from "@tanstack/react-router";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import {
 	IconBell,
 	IconChevronRight,
 	IconContacts,
 	IconFolderDelete,
-	IconHamburger,
 	IconLogout,
+	IconMessage,
 	IconSearch,
 	IconSettings,
+	IconDashboard,
+	IconBookOpen,
 } from "justd-icons";
-import { useState } from "react";
 import { toast } from "sonner";
 import { Logo } from "~components/logo";
 import { useAuth } from "~lib/auth";
 import { Avatar } from "~ui/avatar";
-import { Button, buttonStyles } from "~ui/button";
+import { Aside } from "~ui/aside";
+import { Button } from "~ui/button";
 import { Menu } from "~ui/menu";
-import { Sheet } from "~ui/sheet";
+import { useEffect } from "react";
 
 const routes = [
 	{
 		path: "/dashboard",
 		title: "Overview",
+		icon: IconDashboard,
 	},
 	{
-		path: "/transactions",
-		title: "Transactions",
+		path: "/donations",
+		title: "Donations",
+		icon: IconBookOpen,
 	},
 	{
-		path: "/wallets",
-		title: "Wallets",
+		path: "/requests",
+		title: "Requests",
+		icon: IconHandCoin,
 	},
 	{
-		path: "/settings",
-		title: "Settings",
+		path: "/notifications",
+		title: "Notifications",
+		icon: IconBell,
+	},
+	{
+		path: "/messages",
+		title: "Messages",
+		icon: IconMessage,
+	},
+	{
+		path: "/Profile",
+		title: "Profile",
+		icon: IconContacts,
 	},
 ];
 
@@ -61,10 +78,14 @@ export const Route = createFileRoute("/_main")({
 });
 
 function MainLayout() {
-	const [isSheetOpen, setIsSheetOpen] = useState(false);
 	const { isLoading } = useAuth();
+	const { pathname } = useLocation();
 	const { session } = Route.useRouteContext();
 	const matches = useMatches();
+
+	useEffect(() => {
+		// Every time pathname changes close the mobile sheet
+	}, [pathname]);
 
 	if (matches.some((match) => match.status === "pending")) return null;
 
@@ -77,46 +98,92 @@ function MainLayout() {
 	}
 
 	return (
-		<div>
-			{/* Top Nav Bar */}
-			<div className="p-4 flex items-center justify-between border-b border-border mb-6">
-				<div className="flex items-center justify-between w-full">
-					<div className="flex items-center gap-x-4">
-						<Logo className="h-8 w-auto" />
-						{/* list of links on desktop */}
-						<div className="hidden md:flex items-center gap-x-2">
+		<Aside.Layout
+			navbar={
+				<Aside.Responsive>
+					<Button
+						aria-label="Search"
+						appearance="plain"
+						shape="circle"
+						size="square-petite"
+					>
+						<IconSearch />
+					</Button>
+					<Button
+						aria-label="Notifications"
+						appearance="plain"
+						shape="circle"
+						size="square-petite"
+					>
+						<IconBell />
+					</Button>
+					<Menu>
+						<Menu.Trigger>
+							<Avatar
+								shape="circle"
+								src={`https://i.pravatar.cc/300?u=${session?.user?.email}`}
+								size="medium"
+							/>
+						</Menu.Trigger>
+						<Menu.Content className="min-w-[180px]">
+							<Menu.Item>
+								<IconContacts />
+								Profile
+							</Menu.Item>
+							<Menu.Item>
+								<IconSettings />
+								Settings
+							</Menu.Item>
+							<Menu.Item>
+								<IconLogout />
+								Sign out
+							</Menu.Item>
+							<Menu.Separator />
+							<Menu.Item isDanger>
+								<IconFolderDelete />
+								Delete Account
+							</Menu.Item>
+						</Menu.Content>
+					</Menu>
+				</Aside.Responsive>
+			}
+			aside={
+				<>
+					<Aside.Header>
+						<Logo className="h-8 w-fit" />
+					</Aside.Header>
+					<Aside.Content>
+						<Aside.Section>
 							{routes.map((route) => (
-								<Link
-									className={buttonStyles({
-										appearance: "plain",
-										size: "extra-small",
-										className: "px-2",
-									})}
+								<Aside.Item
 									key={route.path}
-									to={route.path}
-									activeProps={{
-										className: "bg-fg/5",
-									}}
+									icon={route.icon}
+									// @ts-expect-error
+									href={route.path}
+									isCurrent={pathname === route.path}
 								>
 									{route.title}
-								</Link>
+								</Aside.Item>
 							))}
-						</div>
-					</div>
-					<div className="hidden md:flex gap-x-3">
-						<div className="space-x-1">
-							<Button size="square-petite" appearance="plain">
-								<IconSearch className="size-5" />
-							</Button>
-							<Button size="square-petite" appearance="plain">
-								<IconBell className="size-5" />
-							</Button>
-						</div>
+						</Aside.Section>
+					</Aside.Content>
+					{/* <Aside.Footer>
 						<Menu>
 							<Menu.Trigger>
-								<Avatar
-									src={`https://i.pravatar.cc/300?u=${session?.user?.email}`}
-								/>
+								<div className="flex items-center gap-x-3">
+									<Avatar
+										src={`https://i.pravatar.cc/300?u=${session?.user?.email}`}
+										size="extra-small"
+									/>
+									<div>
+										<span className="text-sm font-medium text-fg block -mb-1.5">
+											{session.user.user_metadata?.full_name}
+										</span>
+										<span className="text-muted-fg text-xs">
+											{session.user.email}
+										</span>
+									</div>
+								</div>
 							</Menu.Trigger>
 							<Menu.Content className="min-w-[180px]">
 								<Menu.Item>
@@ -138,23 +205,13 @@ function MainLayout() {
 								</Menu.Item>
 							</Menu.Content>
 						</Menu>
-					</div>
-				</div>
-				{/* Mobile Icon */}
-				<Button
-					onPress={() => setIsSheetOpen(true)}
-					className="md:hidden"
-					size="square-petite"
-					appearance="plain"
-				>
-					<IconHamburger />
-					<span className="sr-only">Open menu</span>
-				</Button>
-			</div>
-			{/* End of Top Nav Bar */}
+					</Aside.Footer> */}
+				</>
+			}
+		>
 			<nav
 				aria-label="Breadcrumb"
-				className="px-4 py-2 text-sm font-medium text-muted-fg"
+				className="py-2 text-sm font-medium text-muted-fg"
 			>
 				<ol className="flex items-center gap-x-2">
 					<li className="flex items-center gap-x-2">
@@ -180,83 +237,9 @@ function MainLayout() {
 					))}
 				</ol>
 			</nav>
-			<div className="px-4">
+			<div>
 				<Outlet />
 			</div>
-			{/* Sheet */}
-			<Sheet>
-				<Sheet.Content
-					isOpen={isSheetOpen}
-					onOpenChange={setIsSheetOpen}
-					isBlurred
-					side="left"
-				>
-					<Sheet.Header className="mb-6">
-						<div className="flex items-center">
-							<Logo className="h-8 w-auto" />
-						</div>
-					</Sheet.Header>
-					<Sheet.Body className="gap-1">
-						{routes.map((route) => (
-							<Link
-								key={route.path}
-								to={route.path}
-								className={buttonStyles({
-									appearance: "plain",
-									size: "small",
-									className: "text-left justify-normal",
-								})}
-								activeProps={{
-									className: "bg-fg/5",
-								}}
-							>
-								{route.title}
-							</Link>
-						))}
-					</Sheet.Body>
-					<Sheet.Footer>
-						<Menu>
-							<Menu.Trigger>
-								<div className="flex justify-between">
-									<div className="flex items-center gap-x-3">
-										<Avatar
-											src={`https://i.pravatar.cc/300?u=${session?.user?.email}`}
-										/>
-										<div>
-											<span className="text-sm font-medium text-fg block -mb-1.5">
-												{session.user.user_metadata?.full_name}
-											</span>
-											<span className="text-muted-fg text-xs">
-												{session.user.email}
-											</span>
-										</div>
-									</div>
-									<IconLogout className="size-5 text-muted-fg" />
-								</div>
-							</Menu.Trigger>
-							<Menu.Content className="min-w-[180px]">
-								<Menu.Item>
-									<IconContacts />
-									Profile
-								</Menu.Item>
-								<Menu.Item>
-									<IconSettings />
-									Settings
-								</Menu.Item>
-								<Menu.Item>
-									<IconLogout />
-									Sign out
-								</Menu.Item>
-								<Menu.Separator />
-								<Menu.Item isDanger>
-									<IconFolderDelete />
-									Delete Account
-								</Menu.Item>
-							</Menu.Content>
-						</Menu>
-					</Sheet.Footer>
-				</Sheet.Content>
-			</Sheet>
-		</div>
+		</Aside.Layout>
 	);
 }
