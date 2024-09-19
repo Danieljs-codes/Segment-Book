@@ -12,6 +12,9 @@ import {
 	IconSettings,
 	IconDashboard,
 	IconBookOpen,
+	IconChevronLgDown,
+	IconMoon,
+	IconSun,
 } from "justd-icons";
 import { toast } from "sonner";
 import { Logo } from "~components/logo";
@@ -20,6 +23,7 @@ import { Avatar } from "~ui/avatar";
 import { Aside } from "~ui/aside";
 import { Button } from "~ui/button";
 import { Menu } from "~ui/menu";
+import { useTheme } from "~components/theme-provider";
 
 const routes = [
 	{
@@ -78,6 +82,7 @@ export const Route = createFileRoute("/_main")({
 
 function MainLayout() {
 	const { isLoading } = useAuth();
+	const { setTheme, theme } = useTheme();
 	const { pathname } = useLocation();
 	const { session } = Route.useRouteContext();
 	const matches = useMatches();
@@ -101,8 +106,9 @@ function MainLayout() {
 						appearance="plain"
 						shape="circle"
 						size="square-petite"
+						onPress={() => setTheme(theme === "light" ? "dark" : "light")}
 					>
-						<IconSearch />
+						{theme === "light" ? <IconMoon /> : <IconSun />}
 					</Button>
 					<Button
 						aria-label="Notifications"
@@ -162,25 +168,30 @@ function MainLayout() {
 							))}
 						</Aside.Section>
 					</Aside.Content>
-					{/* <Aside.Footer>
+					<Aside.Footer className="lg:flex lg:flex-row hidden items-center">
 						<Menu>
-							<Menu.Trigger>
-								<div className="flex items-center gap-x-3">
-									<Avatar
-										src={`https://i.pravatar.cc/300?u=${session?.user?.email}`}
-										size="extra-small"
-									/>
-									<div>
-										<span className="text-sm font-medium text-fg block -mb-1.5">
-											{session.user.user_metadata?.full_name}
-										</span>
-										<span className="text-muted-fg text-xs">
-											{session.user.email}
-										</span>
-									</div>
-								</div>
-							</Menu.Trigger>
-							<Menu.Content className="min-w-[180px]">
+							<Button
+								appearance="plain"
+								aria-label="Profile"
+								className="group w-full justify-start flex"
+							>
+								<Avatar
+									size="extra-small"
+									shape="square"
+									className="-ml-1.5"
+									src="https://github.com/irsyadadl.png"
+								/>
+								{session.user.user_metadata?.full_name
+									?.split(" ")
+									.map(
+										(word: string) =>
+											word.charAt(0).toUpperCase() + word.slice(1),
+									)
+									.join(" ")}
+								<IconChevronLgDown className="right-3 absolute group-pressed:rotate-180 transition-transform" />
+							</Button>
+
+							<Menu.Content className="min-w-[--trigger-width]">
 								<Menu.Item>
 									<IconContacts />
 									Profile
@@ -200,7 +211,7 @@ function MainLayout() {
 								</Menu.Item>
 							</Menu.Content>
 						</Menu>
-					</Aside.Footer> */}
+					</Aside.Footer>
 				</>
 			}
 		>
