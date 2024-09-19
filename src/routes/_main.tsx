@@ -126,21 +126,21 @@ function MainLayout() {
 								size="medium"
 							/>
 						</Menu.Trigger>
-						<Menu.Content className="min-w-[180px]">
-							<Menu.Item>
+						<Menu.Content>
+							<Menu.Item className="text-sm">
 								<IconContacts />
 								Profile
 							</Menu.Item>
-							<Menu.Item>
+							<Menu.Item className="text-sm">
 								<IconSettings />
 								Settings
 							</Menu.Item>
-							<Menu.Item>
+							<Menu.Item className="text-sm">
 								<IconLogout />
 								Sign out
 							</Menu.Item>
 							<Menu.Separator />
-							<Menu.Item isDanger>
+							<Menu.Item className="text-sm" isDanger>
 								<IconFolderDelete />
 								Delete Account
 							</Menu.Item>

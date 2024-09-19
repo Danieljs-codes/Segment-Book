@@ -154,3 +154,36 @@ export const userDonatedBooksQueryOptions = (
 			};
 		},
 	});
+
+	export const userRequestsQueryOptions = (
+		userId: string,
+		page = 1,
+		pageSize = 10,
+		status: 'accepted' | 'declined' | 'all' = 'all'
+	) =>
+		queryOptions({
+			queryKey: ["user-requests", userId, page, pageSize, status],
+			queryFn: async () => {
+				const { data, error } = await supabase.rpc('get_user_requests', {
+					user_id: userId,
+					page: page,
+					page_size: pageSize,
+					request_status: status
+				});
+	
+				if (error) {
+					console.error("Error fetching user's requests:", error);
+					throw new Error(error.message);
+				}
+	
+			
+	
+				return {
+					requests: data,
+					totalCount: data.length, // Assuming the RPC returns all matching records
+					currentPage: page,
+					pageSize: pageSize,
+					totalPages: Math.ceil(data.length / pageSize),
+				};
+			},
+		});

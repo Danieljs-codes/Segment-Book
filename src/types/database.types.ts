@@ -258,6 +258,24 @@ export type Database = {
           status: string
         }[]
       }
+      get_user_requests: {
+        Args: {
+          user_id: string
+          page?: number
+          page_size?: number
+          request_status?: string
+        }
+        Returns: {
+          id: string
+          status: Database["public"]["Enums"]["RequestStatus"]
+          created_at: string
+          book_title: string
+          book_author: string
+          donor_id: string
+          donor_name: string
+          total_count: number
+        }[]
+      }
     }
     Enums: {
       NotificationType: "DONATION_REQUEST"
