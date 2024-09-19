@@ -19,6 +19,7 @@ import { Grid } from "~ui/grid";
 import { Heading } from "~ui/heading";
 import { Menu } from "~ui/menu";
 import { Table } from "~ui/table";
+import { Skeleton } from "~ui/skeleton";
 
 export const Route = createFileRoute("/_main/dashboard")({
 	loader: async ({ context }) => {
@@ -42,9 +43,97 @@ export const Route = createFileRoute("/_main/dashboard")({
 			userId,
 		};
 	},
-	pendingComponent: () => <div>Loading...</div>,
+	pendingComponent: DashboardSkeleton,
 	component: OverviewComponent,
 });
+
+function DashboardSkeleton() {
+	return (
+		<div>
+			<Skeleton className="w-48 h-8 mb-4" />
+			<div className="mb-6">
+				<Grid
+					className="divide-y lg:divide-y-0 lg:divide-x lg:border-x"
+					columns={{ initial: 1, lg: 4 }}
+				>
+					{[...Array(4)].map((_, index) => (
+						<Card
+							key={index}
+							className="border-y-0 shadow-none border-x-0 rounded-none py-4 lg:px-6"
+						>
+							<Card.Header className="p-0">
+								<Skeleton className="w-16 h-6 mb-2" />
+								<Skeleton className="w-32 h-4" />
+							</Card.Header>
+						</Card>
+					))}
+				</Grid>
+			</div>
+			<div className="mb-6">
+				<Card.Header
+					className="px-0 pt-0 space-y-0.5"
+					// @ts-expect-error - TODO: Fix this
+					title={<Skeleton className="w-64 h-6" />}
+					// @ts-expect-error - TODO: Fix this
+					description={<Skeleton className="w-96 h-4" />}
+				/>
+				<Card>
+					<Table aria-label="Books Available for Donation">
+						<Table.Header>
+							{[...Array(4)].map((_, index) => (
+								<Table.Column isRowHeader key={index}>
+									<Skeleton className="w-24 h-4" />
+								</Table.Column>
+							))}
+						</Table.Header>
+						<Table.Body>
+							{[...Array(3)].map((_, rowIndex) => (
+								<Table.Row key={rowIndex}>
+									{[...Array(4)].map((_, cellIndex) => (
+										<Table.Cell key={cellIndex}>
+											<Skeleton className="w-full h-4" />
+										</Table.Cell>
+									))}
+								</Table.Row>
+							))}
+						</Table.Body>
+					</Table>
+				</Card>
+			</div>
+			<div>
+				<Card.Header
+					className="px-0 pt-0 space-y-0.5"
+					// @ts-expect-error - TODO: Fix this
+					title={<Skeleton className="w-48 h-6" />}
+					// @ts-expect-error - TODO: Fix this
+					description={<Skeleton className="w-80 h-4" />}
+				/>
+				<Card>
+					<Table aria-label="Requested Books">
+						<Table.Header>
+							{[...Array(4)].map((_, index) => (
+								<Table.Column isRowHeader key={index}>
+									<Skeleton className="w-24 h-4" />
+								</Table.Column>
+							))}
+						</Table.Header>
+						<Table.Body>
+							{[...Array(3)].map((_, rowIndex) => (
+								<Table.Row key={rowIndex}>
+									{[...Array(4)].map((_, cellIndex) => (
+										<Table.Cell key={cellIndex}>
+											<Skeleton className="w-full h-4" />
+										</Table.Cell>
+									))}
+								</Table.Row>
+							))}
+						</Table.Body>
+					</Table>
+				</Card>
+			</div>
+		</div>
+	);
+}
 
 function OverviewComponent() {
 	const { userId } = Route.useLoaderData();
