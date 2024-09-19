@@ -20,7 +20,6 @@ import { Avatar } from "~ui/avatar";
 import { Aside } from "~ui/aside";
 import { Button } from "~ui/button";
 import { Menu } from "~ui/menu";
-import { useEffect } from "react";
 
 const routes = [
 	{
@@ -29,7 +28,7 @@ const routes = [
 		icon: IconDashboard,
 	},
 	{
-		path: "/donations",
+		path: "/donations?search=all&page=1&pageSize=10",
 		title: "Donations",
 		icon: IconBookOpen,
 	},
@@ -82,10 +81,6 @@ function MainLayout() {
 	const { pathname } = useLocation();
 	const { session } = Route.useRouteContext();
 	const matches = useMatches();
-
-	useEffect(() => {
-		// Every time pathname changes close the mobile sheet
-	}, [pathname]);
 
 	if (matches.some((match) => match.status === "pending")) return null;
 
@@ -160,7 +155,7 @@ function MainLayout() {
 									icon={route.icon}
 									// @ts-expect-error
 									href={route.path}
-									isCurrent={pathname === route.path}
+									isCurrent={pathname === route.path.split("?")[0]}
 								>
 									{route.title}
 								</Aside.Item>

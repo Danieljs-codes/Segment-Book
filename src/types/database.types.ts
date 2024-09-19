@@ -45,6 +45,7 @@ export type Database = {
       books: {
         Row: {
           author: string
+          createdAt: string
           description: string | null
           id: string
           isDonated: boolean
@@ -53,6 +54,7 @@ export type Database = {
         }
         Insert: {
           author: string
+          createdAt?: string
           description?: string | null
           id?: string
           isDonated?: boolean
@@ -61,6 +63,7 @@ export type Database = {
         }
         Update: {
           author?: string
+          createdAt?: string
           description?: string | null
           id?: string
           isDonated?: boolean

@@ -43,8 +43,10 @@ export const activeRequestsReceivedQueryOptions = (userId: string) =>
 	queryOptions({
 		queryKey: ["active-requests-received", userId],
 		queryFn: async () => {
-			const { data, error } = await supabase
-				.rpc('get_active_requests_received', { user_id: userId });
+			const { data, error } = await supabase.rpc(
+				"get_active_requests_received",
+				{ user_id: userId },
+			);
 
 			if (error) {
 				console.error("Error fetching active requests received:", error);
@@ -59,8 +61,9 @@ export const activeRequestsSentQueryOptions = (userId: string) =>
 	queryOptions({
 		queryKey: ["active-requests-sent", userId],
 		queryFn: async () => {
-			const { data, error } = await supabase
-				.rpc('get_active_requests_sent', { user_id: userId });
+			const { data, error } = await supabase.rpc("get_active_requests_sent", {
+				user_id: userId,
+			});
 
 			if (error) {
 				console.error("Error fetching active requests sent:", error);
@@ -90,7 +93,8 @@ export const listedButNotDonatedBooksQueryOptions = (userId: string) =>
 		},
 	});
 
-	export const bookListedButNotDonatedQueryOptions = (userId: string) => queryOptions({
+export const bookListedButNotDonatedQueryOptions = (userId: string) =>
+	queryOptions({
 		queryKey: ["book-listed-not-donated", userId],
 		queryFn: async () => {
 			const { data, error } = await supabase
@@ -105,5 +109,48 @@ export const listedButNotDonatedBooksQueryOptions = (userId: string) =>
 			}
 
 			return data ?? [];
+		},
+	});
+
+export const userDonatedBooksQueryOptions = (
+	userId: string,
+	page = 1,
+	pageSize = 10,
+	status: 'donated' | 'not donated' | 'all' | 'notDonated' = 'all',
+) =>
+	queryOptions({
+		queryKey: ["user-donated-books", userId, page, pageSize, status],
+		queryFn: async () => {
+			const startIndex = (page - 1) * pageSize;
+			const endIndex = startIndex + pageSize - 1;
+
+			let query = supabase
+				.from("books")
+				.select("id, title, author, description, isDonated, createdAt", {
+					count: "exact",
+				})
+				.eq("ownerId", userId)
+				.order("createdAt", { ascending: false });
+
+			if (status === 'donated') {
+				query = query.eq("isDonated", true);
+			} else if (status === 'not donated' || status === 'notDonated') {
+				query = query.eq("isDonated", false);
+			}
+
+			const { data, error, count } = await query.range(startIndex, endIndex);
+
+			if (error) {
+				console.error("Error fetching user's books:", error);
+				throw new Error(error.message);
+			}
+
+			return {
+				books: data ?? [],
+				totalCount: count ?? 0,
+				currentPage: page,
+				pageSize: pageSize,
+				totalPages: Math.ceil((count ?? 0) / pageSize),
+			};
 		},
 	});

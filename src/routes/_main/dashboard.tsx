@@ -18,6 +18,7 @@ import {
 import { Button } from "~ui/button";
 import { Card } from "~ui/card";
 import { Grid } from "~ui/grid";
+import { Heading } from "~ui/heading";
 import { Menu } from "~ui/menu";
 import { Table } from "~ui/table";
 
@@ -70,7 +71,9 @@ function OverviewComponent() {
 
 	return (
 		<div>
-			<h1 className="font-semibold text-xl mt-2 mb-2 lg:mb-4">Overview</h1>
+			<Heading className="mb-4" level={2} tracking="tight">
+				Overview
+			</Heading>
 			<div className="mb-6">
 				<Grid
 					className="divide-y lg:divide-y-0 lg:divide-x lg:border-x"
@@ -146,6 +149,7 @@ function OverviewComponent() {
 													<IconDotsVertical />
 												</Menu.Trigger>
 												<Menu.Content
+													className="min-w-[180px]"
 													respectScreen={false}
 													placement="bottom end"
 												>
