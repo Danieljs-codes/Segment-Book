@@ -2,6 +2,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
 	IconCheck,
+	IconChevronLeft,
+	IconChevronRight,
 	IconDotsVertical,
 	IconHighlight,
 	IconTrash,
@@ -9,6 +11,7 @@ import {
 import { z } from "zod";
 import { userDonatedBooksQueryOptions } from "~lib/query-options";
 import { Badge } from "~ui/badge";
+import { Button } from "~ui/button";
 import { Card } from "~ui/card";
 import { Heading } from "~ui/heading";
 import { Menu } from "~ui/menu";
@@ -58,6 +61,7 @@ const filterOptions = [
 
 function Donations() {
 	const { search } = Route.useLoaderData();
+	const navigate = Route.useNavigate();
 	const {
 		session: {
 			user: { id },
@@ -108,8 +112,8 @@ function Donations() {
 						<Table.Column isRowHeader>Title</Table.Column>
 						<Table.Column>Author</Table.Column>
 						<Table.Column>Description</Table.Column>
-						<Table.Column>Listed At</Table.Column>
 						<Table.Column>Status</Table.Column>
+						<Table.Column>Listed At</Table.Column>
 						<Table.Column />
 					</Table.Header>
 					<Table.Body
@@ -126,16 +130,16 @@ function Donations() {
 								<Table.Cell>{book.author}</Table.Cell>
 								<Table.Cell>{book.description}</Table.Cell>
 								<Table.Cell>
+									<Badge intent={book.isDonated ? "success" : "primary"}>
+										{book.isDonated ? "Donated" : "Not Donated"}
+									</Badge>
+								</Table.Cell>
+								<Table.Cell>
 									{new Date(book.createdAt).toLocaleDateString("en-US", {
 										year: "numeric",
 										month: "short",
 										day: "numeric",
 									})}
-								</Table.Cell>
-								<Table.Cell>
-									<Badge intent={book.isDonated ? "success" : "primary"}>
-										{book.isDonated ? "Donated" : "Not Donated"}
-									</Badge>
 								</Table.Cell>
 								<Table.Cell>
 									<div className="flex justify-end">
@@ -155,7 +159,11 @@ function Donations() {
 													<IconCheck />
 													Mark as Donated
 												</Menu.Item>
-												<Menu.Item className="text-xs" isDanger>
+												<Menu.Item
+													isDisabled={book.isDonated}
+													className="text-xs"
+													isDanger
+												>
 													<IconTrash />
 													Delete Book
 												</Menu.Item>
@@ -168,6 +176,35 @@ function Donations() {
 					</Table.Body>
 				</Table>
 			</Card>
+			<div className="mt-4 flex justify-between items-center">
+				<Button
+					intent="secondary"
+					size="extra-small"
+					isDisabled={search.page <= 1}
+					onPress={() =>
+						navigate({ search: (prev) => ({ ...prev, page: prev.page - 1 }) })
+					}
+				>
+					<IconChevronLeft />
+					Prev
+				</Button>
+				<div className="text-center text-xs sm:text-sm text-muted-fg">
+					Page {search.page} of {Math.ceil(books.totalCount / books.pageSize)}
+				</div>
+				<Button
+					intent="secondary"
+					size="extra-small"
+					isDisabled={
+						search.page >= Math.ceil(books.totalCount / books.pageSize)
+					}
+					onPress={() =>
+						navigate({ search: (prev) => ({ ...prev, page: prev.page + 1 }) })
+					}
+				>
+					Next
+					<IconChevronRight />
+				</Button>
+			</div>
 		</div>
 	);
 }
