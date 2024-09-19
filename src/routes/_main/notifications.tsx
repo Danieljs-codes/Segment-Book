@@ -1,6 +1,10 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { IconCircleCheck } from "justd-icons";
+import {
+	IconChevronLeft,
+	IconChevronRight,
+	IconCircleCheck,
+} from "justd-icons";
 import { z } from "zod";
 import { userNotificationsQueryOptions } from "~lib/query-options";
 import { Button } from "~ui/button";
@@ -86,6 +90,8 @@ function Notifications() {
 					filter: `receiverId=eq.${id}`,
 				},
 				async (payload) => {
+					console.log("New notification received:", payload.new);
+					// Refetch the notifications to include the new one
 					refetch();
 				},
 			)
@@ -186,6 +192,36 @@ function Notifications() {
 						</div>
 					</Card>
 				))}
+			</div>
+			<div className="mt-4 flex justify-between items-center">
+				<Button
+					intent="secondary"
+					size="extra-small"
+					isDisabled={search.page <= 1}
+					onPress={() =>
+						navigate({ search: (prev) => ({ ...prev, page: prev.page - 1 }) })
+					}
+				>
+					<IconChevronLeft />
+					Prev
+				</Button>
+				<div className="text-center text-xs sm:text-sm text-muted-fg">
+					Page {search.page} of{" "}
+					{Math.ceil((data?.totalCount ?? 0) / (data?.pageSize ?? 10))}
+				</div>
+				<Button
+					intent="secondary"
+					size="extra-small"
+					isDisabled={
+						!data || search.page >= Math.ceil(data.totalCount / data.pageSize)
+					}
+					onPress={() =>
+						navigate({ search: (prev) => ({ ...prev, page: prev.page + 1 }) })
+					}
+				>
+					Next
+					<IconChevronRight />
+				</Button>
 			</div>
 		</div>
 	);
