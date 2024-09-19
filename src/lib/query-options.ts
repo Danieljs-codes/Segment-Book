@@ -116,7 +116,7 @@ export const userDonatedBooksQueryOptions = (
 	userId: string,
 	page = 1,
 	pageSize = 10,
-	status: 'donated' | 'not donated' | 'all' | 'notDonated' = 'all',
+	status: "donated" | "not donated" | "all" | "notDonated" = "all",
 ) =>
 	queryOptions({
 		queryKey: ["user-donated-books", userId, page, pageSize, status],
@@ -132,9 +132,9 @@ export const userDonatedBooksQueryOptions = (
 				.eq("ownerId", userId)
 				.order("createdAt", { ascending: false });
 
-			if (status === 'donated') {
+			if (status === "donated") {
 				query = query.eq("isDonated", true);
-			} else if (status === 'not donated' || status === 'notDonated') {
+			} else if (status === "not donated" || status === "notDonated") {
 				query = query.eq("isDonated", false);
 			}
 
@@ -155,74 +155,82 @@ export const userDonatedBooksQueryOptions = (
 		},
 	});
 
-	export const userRequestsQueryOptions = (
-		userId: string,
-		page = 1,
-		pageSize = 10,
-		status: 'accepted' | 'declined' | 'all' = 'all'
-	) =>
-		queryOptions({
-			queryKey: ["user-requests", userId, page, pageSize, status],
-			queryFn: async () => {
-				const { data, error } = await supabase.rpc('get_user_requests', {
-					user_id: userId,
-					page: page,
-					page_size: pageSize,
-					request_status: status
-				});
-	
-				if (error) {
-					console.error("Error fetching user's requests:", error);
-					throw new Error(error.message);
-				}
-	
-			
-	
-				return {
-					requests: data,
-					totalCount: data.length, // Assuming the RPC returns all matching records
-					currentPage: page,
-					pageSize: pageSize,
-					totalPages: Math.ceil(data.length / pageSize),
-				};
-			},
-		});
-		
-
-
-
-
-
-		export const userNotificationsQueryOptions = (
-			userId: string,
-			page = 1,
-			pageSize = 10
-		) =>
-			queryOptions({
-				queryKey: ["user-notifications", userId, page, pageSize],
-				queryFn: async () => {
-					const startIndex = (page - 1) * pageSize;
-					const endIndex = startIndex + pageSize - 1;
-		
-					const { data, error, count } = await supabase
-						.from("notifications")
-						.select("*", { count: "exact" })
-						.eq("userId", userId)
-						.order("createdAt", { ascending: false })
-						.range(startIndex, endIndex);
-		
-					if (error) {
-						console.error("Error fetching user notifications:", error);
-						throw new Error(error.message);
-					}
-		
-					return {
-						notifications: data as Database["public"]["Tables"]["notifications"]["Row"][],
-						totalCount: count ?? 0,
-						currentPage: page,
-						pageSize: pageSize,
-						totalPages: Math.ceil((count ?? 0) / pageSize),
-					};
-				},
+export const userRequestsQueryOptions = (
+	userId: string,
+	page = 1,
+	pageSize = 10,
+	status: "accepted" | "declined" | "all" = "all",
+) =>
+	queryOptions({
+		queryKey: ["user-requests", userId, page, pageSize, status],
+		queryFn: async () => {
+			const { data, error } = await supabase.rpc("get_user_requests", {
+				user_id: userId,
+				page: page,
+				page_size: pageSize,
+				request_status: status,
 			});
-		
+
+			if (error) {
+				console.error("Error fetching user's requests:", error);
+				throw new Error(error.message);
+			}
+
+			return {
+				requests: data,
+				totalCount: data.length, // Assuming the RPC returns all matching records
+				currentPage: page,
+				pageSize: pageSize,
+				totalPages: Math.ceil(data.length / pageSize),
+			};
+		},
+	});
+
+export const userNotificationsQueryOptions = (
+	userId: string,
+	page = 1,
+	pageSize = 10,
+	status: "all" | "unread" = "all",
+) =>
+	queryOptions({
+		queryKey: ["user-notifications", userId, page, pageSize, status],
+		queryFn: async () => {
+			const startIndex = (page - 1) * pageSize;
+			const endIndex = startIndex + pageSize - 1;
+
+			let query = supabase
+				.from("notifications")
+				.select(
+					`
+					*,
+					user:users!notifications_senderid_fkey (
+						id,
+						name,
+						email
+					)
+					`,
+					{ count: "exact" },
+				)
+				.eq("receiverId", userId)
+				.order("createdAt", { ascending: false });
+
+			if (status === "unread") {
+				query = query.eq("isRead", false);
+			}
+
+			const { data, error, count } = await query.range(startIndex, endIndex);
+
+			if (error) {
+				console.error("Error fetching user notifications:", error);
+				throw new Error(error.message);
+			}
+
+			return {
+				notifications: data,
+				totalCount: count ?? 0,
+				currentPage: page,
+				pageSize: pageSize,
+				totalPages: Math.ceil((count ?? 0) / pageSize),
+			};
+		},
+	});

@@ -181,7 +181,7 @@ function MainLayout() {
 									size="extra-small"
 									shape="square"
 									className="-ml-1.5"
-									src="https://github.com/irsyadadl.png"
+									src={`https://i.pravatar.cc/300?u=${session?.user?.email}`}
 								/>
 								{session.user.user_metadata?.full_name
 									?.split(" ")

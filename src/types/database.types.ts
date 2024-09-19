@@ -177,29 +177,39 @@ export type Database = {
           createdAt: string
           id: string
           isRead: boolean
-          type: Database["public"]["Enums"]["NotificationType"]
-          userId: string
+          receiverId: string
+          senderId: string
+          title: string
         }
         Insert: {
           content: string
           createdAt?: string
           id?: string
           isRead?: boolean
-          type: Database["public"]["Enums"]["NotificationType"]
-          userId: string
+          receiverId: string
+          senderId: string
+          title: string
         }
         Update: {
           content?: string
           createdAt?: string
           id?: string
           isRead?: boolean
-          type?: Database["public"]["Enums"]["NotificationType"]
-          userId?: string
+          receiverId?: string
+          senderId?: string
+          title?: string
         }
         Relationships: [
           {
-            foreignKeyName: "notifications_userId_fkey"
-            columns: ["userId"]
+            foreignKeyName: "notifications_receiverid_fkey"
+            columns: ["receiverId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_senderid_fkey"
+            columns: ["senderId"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -257,6 +267,15 @@ export type Database = {
           request_date: string
           status: string
         }[]
+      }
+      get_user_notifications: {
+        Args: {
+          user_id: string
+          page_number?: number
+          page_size?: number
+          status?: string
+        }
+        Returns: Json
       }
       get_user_requests: {
         Args: {
