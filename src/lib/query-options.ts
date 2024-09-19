@@ -187,3 +187,42 @@ export const userDonatedBooksQueryOptions = (
 				};
 			},
 		});
+		
+
+
+
+
+
+		export const userNotificationsQueryOptions = (
+			userId: string,
+			page = 1,
+			pageSize = 10
+		) =>
+			queryOptions({
+				queryKey: ["user-notifications", userId, page, pageSize],
+				queryFn: async () => {
+					const startIndex = (page - 1) * pageSize;
+					const endIndex = startIndex + pageSize - 1;
+		
+					const { data, error, count } = await supabase
+						.from("notifications")
+						.select("*", { count: "exact" })
+						.eq("userId", userId)
+						.order("createdAt", { ascending: false })
+						.range(startIndex, endIndex);
+		
+					if (error) {
+						console.error("Error fetching user notifications:", error);
+						throw new Error(error.message);
+					}
+		
+					return {
+						notifications: data as Database["public"]["Tables"]["notifications"]["Row"][],
+						totalCount: count ?? 0,
+						currentPage: page,
+						pageSize: pageSize,
+						totalPages: Math.ceil((count ?? 0) / pageSize),
+					};
+				},
+			});
+		

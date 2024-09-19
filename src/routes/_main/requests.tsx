@@ -109,7 +109,7 @@ function Requests() {
 				<Heading level={2} tracking="tight">
 					Requests
 				</Heading>
-				<p className="text-xs md:text-sm text-muted-fg">
+				<p className="text-xs md:text-sm text-muted-fg mt-1">
 					This is the page where you can see all the requests you've made for
 					books.
 				</p>
@@ -177,7 +177,7 @@ function Requests() {
 												? "success"
 												: request.status === "REJECTED"
 													? "danger"
-													: "primary"
+													: "warning"
 										}
 									>
 										{request.status.toLowerCase()}

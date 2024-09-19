@@ -15,6 +15,7 @@ import { Route as MainImport } from './routes/_main'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as MainRequestsImport } from './routes/_main/requests'
+import { Route as MainNotificationsImport } from './routes/_main/notifications'
 import { Route as MainDonationsImport } from './routes/_main/donations'
 import { Route as MainDashboardImport } from './routes/_main/dashboard'
 import { Route as AuthSignUpImport } from './routes/_auth/sign-up'
@@ -39,6 +40,11 @@ const IndexRoute = IndexImport.update({
 
 const MainRequestsRoute = MainRequestsImport.update({
   path: '/requests',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainNotificationsRoute = MainNotificationsImport.update({
+  path: '/notifications',
   getParentRoute: () => MainRoute,
 } as any)
 
@@ -115,6 +121,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainDonationsImport
       parentRoute: typeof MainImport
     }
+    '/_main/notifications': {
+      id: '/_main/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof MainNotificationsImport
+      parentRoute: typeof MainImport
+    }
     '/_main/requests': {
       id: '/_main/requests'
       path: '/requests'
@@ -142,12 +155,14 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 interface MainRouteChildren {
   MainDashboardRoute: typeof MainDashboardRoute
   MainDonationsRoute: typeof MainDonationsRoute
+  MainNotificationsRoute: typeof MainNotificationsRoute
   MainRequestsRoute: typeof MainRequestsRoute
 }
 
 const MainRouteChildren: MainRouteChildren = {
   MainDashboardRoute: MainDashboardRoute,
   MainDonationsRoute: MainDonationsRoute,
+  MainNotificationsRoute: MainNotificationsRoute,
   MainRequestsRoute: MainRequestsRoute,
 }
 
@@ -160,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof AuthSignUpRoute
   '/dashboard': typeof MainDashboardRoute
   '/donations': typeof MainDonationsRoute
+  '/notifications': typeof MainNotificationsRoute
   '/requests': typeof MainRequestsRoute
 }
 
@@ -170,6 +186,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof AuthSignUpRoute
   '/dashboard': typeof MainDashboardRoute
   '/donations': typeof MainDonationsRoute
+  '/notifications': typeof MainNotificationsRoute
   '/requests': typeof MainRequestsRoute
 }
 
@@ -182,6 +199,7 @@ export interface FileRoutesById {
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_main/dashboard': typeof MainDashboardRoute
   '/_main/donations': typeof MainDonationsRoute
+  '/_main/notifications': typeof MainNotificationsRoute
   '/_main/requests': typeof MainRequestsRoute
 }
 
@@ -194,6 +212,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/dashboard'
     | '/donations'
+    | '/notifications'
     | '/requests'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -203,6 +222,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/dashboard'
     | '/donations'
+    | '/notifications'
     | '/requests'
   id:
     | '__root__'
@@ -213,6 +233,7 @@ export interface FileRouteTypes {
     | '/_auth/sign-up'
     | '/_main/dashboard'
     | '/_main/donations'
+    | '/_main/notifications'
     | '/_main/requests'
   fileRoutesById: FileRoutesById
 }
@@ -261,6 +282,7 @@ export const routeTree = rootRoute
       "children": [
         "/_main/dashboard",
         "/_main/donations",
+        "/_main/notifications",
         "/_main/requests"
       ]
     },
@@ -278,6 +300,10 @@ export const routeTree = rootRoute
     },
     "/_main/donations": {
       "filePath": "_main/donations.tsx",
+      "parent": "/_main"
+    },
+    "/_main/notifications": {
+      "filePath": "_main/notifications.tsx",
       "parent": "/_main"
     },
     "/_main/requests": {

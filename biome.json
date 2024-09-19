@@ -28,6 +28,9 @@
 			"suspicious": {
 				"noExplicitAny": "off",
 				"noArrayIndexKey": "off"
+			},
+			"complexity": {
+				"noUselessFragments": "off"
 			}
 		}
 	},
