@@ -9,9 +9,24 @@ import { Switch } from "~ui/switch";
 import { Card } from "~ui/card";
 import { Avatar } from "~ui/avatar";
 import { NotificationsSkeleton } from "~components/notifications-skeleton";
-import { useState } from "react";
 import { useEffect } from "react";
-import { supabase } from "~lib/supabase"; // Ensure this import is correct
+import { supabase } from "~lib/supabase";
+
+// Define the Notification type here if it's not available in a separate file
+interface Notification {
+	id: string;
+	title: string;
+	content: string;
+	createdAt: string;
+	isRead: boolean;
+	senderId: string;
+	receiverId: string;
+	user?: {
+		id: string;
+		name: string;
+		email: string;
+	};
+}
 
 const notificationFilterSchema = z.object({
 	status: z.enum(["all", "unread"]).default("all").catch("all"),
@@ -50,9 +65,7 @@ function Notifications() {
 	const navigate = Route.useNavigate();
 	const search = Route.useSearch();
 	const { id } = Route.useLoaderData();
-	const {
-		data: { notifications: initialNotifications },
-	} = useSuspenseQuery(
+	const { data, refetch } = useSuspenseQuery(
 		userNotificationsQueryOptions(
 			id,
 			search.page,
@@ -60,7 +73,6 @@ function Notifications() {
 			search.status,
 		),
 	);
-	const [notifications, setNotifications] = useState(initialNotifications);
 
 	useEffect(() => {
 		const channel = supabase
@@ -74,30 +86,7 @@ function Notifications() {
 					filter: `receiverId=eq.${id}`,
 				},
 				async (payload) => {
-					const newNotification = payload.new;
-
-					// Fetch the user data for the sender
-					const { data: userData, error } = await supabase
-						.from("users")
-						.select("id, name, email")
-						.eq("id", newNotification.senderId)
-						.single();
-
-					if (error) {
-						console.error("Error fetching user data:", error);
-						return;
-					}
-
-					const fullNotification = {
-						...newNotification,
-						user: userData,
-					};
-
-					console.log(fullNotification);
-
-					setNotifications((prevNotifications) =>
-						[fullNotification, ...prevNotifications].slice(0, search.pageSize),
-					);
+					refetch();
 				},
 			)
 			.subscribe();
@@ -105,7 +94,9 @@ function Notifications() {
 		return () => {
 			supabase.removeChannel(channel);
 		};
-	}, [id, search.pageSize]);
+	}, [id, refetch]);
+
+	const notifications = data.notifications;
 
 	return (
 		<div>
