@@ -14,7 +14,7 @@ import { ThemeProvider } from "~components/theme-provider";
 import nProgress from "nprogress";
 import { RouterProvider as ReactAriaRouterProvider } from "react-aria-components";
 import { useRouter } from "@tanstack/react-router";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export const queryClient = new QueryClient();
 
@@ -22,6 +22,8 @@ export const queryClient = new QueryClient();
 const router = createRouter({
 	routeTree,
 	defaultPreload: "intent",
+	defaultPreloadStaleTime: 10 * 1000,
+	defaultPendingMinMs: 100,
 	context: {
 		auth: undefined!,
 		queryClient,
@@ -55,7 +57,7 @@ function InnerApp() {
 				return (
 					<ReactAriaRouterProvider
 						navigate={(to, options) => router.navigate({ to, ...options })}
-						
+
 						// useHref={(to) => router.buildLocation(to).href}
 					>
 						{children}

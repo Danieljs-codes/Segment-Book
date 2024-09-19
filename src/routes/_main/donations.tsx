@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
 	IconCheck,
@@ -91,7 +91,6 @@ const filterOptions = [
 ];
 
 function Donations() {
-	const [isOpen, setIsOpen] = useState(false);
 	const { search } = Route.useLoaderData();
 	const navigate = Route.useNavigate();
 	const {
@@ -99,7 +98,11 @@ function Donations() {
 			user: { id },
 		},
 	} = Route.useRouteContext();
-	const { data: books } = useSuspenseQuery(
+	const {
+		data: books,
+		isLoading,
+		error,
+	} = useQuery(
 		userDonatedBooksQueryOptions(
 			id,
 			search.page,
@@ -107,6 +110,11 @@ function Donations() {
 			search.status,
 		),
 	);
+
+	if (isLoading) return <DonationsPending />;
+
+	if (error) return <div>Error: {error.message}</div>;
+
 	return (
 		<div>
 			<div className="mb-6 mt-2">
@@ -120,12 +128,8 @@ function Donations() {
 			</div>
 			<div className="flex justify-end mb-4">
 				<Select
-					key={search.status}
-					isOpen={isOpen}
-					onOpenChange={setIsOpen}
 					defaultSelectedKey={search.status}
 					onSelectionChange={(selectedKey) => {
-						setIsOpen(false);
 						navigate({
 							search: (prev) => ({
 								...prev,
@@ -170,7 +174,7 @@ function Donations() {
 										: "You currently have no not donated books."}
 							</div>
 						)}
-						items={books.books}
+						items={books ? books.books : []}
 					>
 						{(book) => (
 							<Table.Row id={book.id}>
@@ -237,12 +241,14 @@ function Donations() {
 					Prev
 				</Button>
 				<div className="text-center text-xs sm:text-sm text-muted-fg">
-					Page {search.page} of {Math.ceil(books.totalCount / books.pageSize)}
+					Page {search.page} of{" "}
+					{Math.ceil((books?.totalCount ?? 0) / (books?.pageSize ?? 10))}
 				</div>
 				<Button
 					intent="secondary"
 					size="extra-small"
 					isDisabled={
+						!books ||
 						search.page >= Math.ceil(books.totalCount / books.pageSize)
 					}
 					onPress={() =>

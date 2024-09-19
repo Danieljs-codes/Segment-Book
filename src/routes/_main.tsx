@@ -151,7 +151,9 @@ function MainLayout() {
 			aside={
 				<>
 					<Aside.Header>
-						<Logo className="h-8 w-fit" />
+						<Link to="/dashboard">
+							<Logo className="h-8 w-fit" />
+						</Link>
 					</Aside.Header>
 					<Aside.Content>
 						<Aside.Section>
@@ -199,6 +201,14 @@ function MainLayout() {
 								<Menu.Item>
 									<IconSettings />
 									Settings
+								</Menu.Item>
+								<Menu.Item
+									onAction={() =>
+										setTheme(theme === "light" ? "dark" : "light")
+									}
+								>
+									{theme === "light" ? <IconMoon /> : <IconSun />}
+									Toggle Theme
 								</Menu.Item>
 								<Menu.Item>
 									<IconLogout />

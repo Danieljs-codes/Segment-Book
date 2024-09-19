@@ -1,7 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-	IconBook,
 	IconCheck,
 	IconDotsVertical,
 	IconHighlight,
@@ -15,7 +14,6 @@ import {
 	listedButNotDonatedBooksQueryOptions,
 	bookListedButNotDonatedQueryOptions,
 } from "~lib/query-options";
-import { Button } from "~ui/button";
 import { Card } from "~ui/card";
 import { Grid } from "~ui/grid";
 import { Heading } from "~ui/heading";
@@ -99,7 +97,7 @@ function OverviewComponent() {
 						<Card.Header
 							className="p-0"
 							title={`${bookListedButNotDonated.length}`}
-							description="Books you've listed but haven't been donated yet"
+							description="Listed books awaiting donation"
 							descriptionClassName="text-sm"
 						/>
 					</Card>
