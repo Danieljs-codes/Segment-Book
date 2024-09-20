@@ -81,7 +81,7 @@ function Messages() {
 											})()}
 										</p>
 									</div>
-									<p className="text-xs md:text-sm text-muted-fg mt-1">
+									<p className="text-xs md:text-sm text-muted-fg mt-1 text-ellipsis line-clamp-2">
 										{chat.last_message}
 									</p>
 								</div>
