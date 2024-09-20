@@ -163,7 +163,7 @@ function MainLayout() {
 									icon={route.icon}
 									// @ts-expect-error
 									href={route.path}
-									isCurrent={pathname === route.path.split("?")[0]}
+									isCurrent={pathname.startsWith(route.path.split("?")[0])}
 								>
 									{route.title}
 								</Aside.Item>
