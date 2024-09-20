@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "./supabase";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const totalDonationsQueryOptions = (userId: string) =>
 	queryOptions({
@@ -234,3 +235,43 @@ export const userNotificationsQueryOptions = (
 			};
 		},
 	});
+
+export const userChatsQueryOptions = ({ userId }: { userId: string }) =>
+	queryOptions({
+		queryKey: ["user-chats", userId],
+		queryFn: async () => {
+			const { data, error } = await supabase.rpc("get_user_chats", {
+				user_id: userId,
+			});
+
+			if (error) {
+				console.error("Error fetching user chats:", error);
+				throw new Error(error.message);
+			}
+
+			return data;
+		},
+	});
+
+export const chatMessagesQueryOptions = (chatId: string, userId: string) => ({
+	queryKey: ["chatMessages", chatId],
+	queryFn: async () => {
+		const { data: messages, error } = await supabase
+			.from("messages")
+			.select("*")
+			.eq("chat_id", chatId)
+			.order("createdAt", { ascending: true });
+
+		if (error) throw error;
+
+		const { data: otherUser, error: userError } = await supabase
+			.from("users")
+			.select("id, name, email")
+			.neq("id", userId)
+			.single();
+
+		if (userError) throw userError;
+
+		return { messages, otherUser };
+	},
+});

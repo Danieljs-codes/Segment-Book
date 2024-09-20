@@ -20,6 +20,8 @@ import { Route as MainDonationsImport } from './routes/_main/donations'
 import { Route as MainDashboardImport } from './routes/_main/dashboard'
 import { Route as AuthSignUpImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInImport } from './routes/_auth/sign-in'
+import { Route as MainMessagesIndexImport } from './routes/_main/messages/index'
+import { Route as MainMessagesChatIdImport } from './routes/_main/messages/$chatId'
 
 // Create/Update Routes
 
@@ -66,6 +68,16 @@ const AuthSignUpRoute = AuthSignUpImport.update({
 const AuthSignInRoute = AuthSignInImport.update({
   path: '/sign-in',
   getParentRoute: () => AuthRoute,
+} as any)
+
+const MainMessagesIndexRoute = MainMessagesIndexImport.update({
+  path: '/messages/',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainMessagesChatIdRoute = MainMessagesChatIdImport.update({
+  path: '/messages/$chatId',
+  getParentRoute: () => MainRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -135,6 +147,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainRequestsImport
       parentRoute: typeof MainImport
     }
+    '/_main/messages/$chatId': {
+      id: '/_main/messages/$chatId'
+      path: '/messages/$chatId'
+      fullPath: '/messages/$chatId'
+      preLoaderRoute: typeof MainMessagesChatIdImport
+      parentRoute: typeof MainImport
+    }
+    '/_main/messages/': {
+      id: '/_main/messages/'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MainMessagesIndexImport
+      parentRoute: typeof MainImport
+    }
   }
 }
 
@@ -157,6 +183,8 @@ interface MainRouteChildren {
   MainDonationsRoute: typeof MainDonationsRoute
   MainNotificationsRoute: typeof MainNotificationsRoute
   MainRequestsRoute: typeof MainRequestsRoute
+  MainMessagesChatIdRoute: typeof MainMessagesChatIdRoute
+  MainMessagesIndexRoute: typeof MainMessagesIndexRoute
 }
 
 const MainRouteChildren: MainRouteChildren = {
@@ -164,6 +192,8 @@ const MainRouteChildren: MainRouteChildren = {
   MainDonationsRoute: MainDonationsRoute,
   MainNotificationsRoute: MainNotificationsRoute,
   MainRequestsRoute: MainRequestsRoute,
+  MainMessagesChatIdRoute: MainMessagesChatIdRoute,
+  MainMessagesIndexRoute: MainMessagesIndexRoute,
 }
 
 const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
@@ -177,6 +207,8 @@ export interface FileRoutesByFullPath {
   '/donations': typeof MainDonationsRoute
   '/notifications': typeof MainNotificationsRoute
   '/requests': typeof MainRequestsRoute
+  '/messages/$chatId': typeof MainMessagesChatIdRoute
+  '/messages': typeof MainMessagesIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -188,6 +220,8 @@ export interface FileRoutesByTo {
   '/donations': typeof MainDonationsRoute
   '/notifications': typeof MainNotificationsRoute
   '/requests': typeof MainRequestsRoute
+  '/messages/$chatId': typeof MainMessagesChatIdRoute
+  '/messages': typeof MainMessagesIndexRoute
 }
 
 export interface FileRoutesById {
@@ -201,6 +235,8 @@ export interface FileRoutesById {
   '/_main/donations': typeof MainDonationsRoute
   '/_main/notifications': typeof MainNotificationsRoute
   '/_main/requests': typeof MainRequestsRoute
+  '/_main/messages/$chatId': typeof MainMessagesChatIdRoute
+  '/_main/messages/': typeof MainMessagesIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -214,6 +250,8 @@ export interface FileRouteTypes {
     | '/donations'
     | '/notifications'
     | '/requests'
+    | '/messages/$chatId'
+    | '/messages'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -224,6 +262,8 @@ export interface FileRouteTypes {
     | '/donations'
     | '/notifications'
     | '/requests'
+    | '/messages/$chatId'
+    | '/messages'
   id:
     | '__root__'
     | '/'
@@ -235,6 +275,8 @@ export interface FileRouteTypes {
     | '/_main/donations'
     | '/_main/notifications'
     | '/_main/requests'
+    | '/_main/messages/$chatId'
+    | '/_main/messages/'
   fileRoutesById: FileRoutesById
 }
 
@@ -283,7 +325,9 @@ export const routeTree = rootRoute
         "/_main/dashboard",
         "/_main/donations",
         "/_main/notifications",
-        "/_main/requests"
+        "/_main/requests",
+        "/_main/messages/$chatId",
+        "/_main/messages/"
       ]
     },
     "/_auth/sign-in": {
@@ -308,6 +352,14 @@ export const routeTree = rootRoute
     },
     "/_main/requests": {
       "filePath": "_main/requests.tsx",
+      "parent": "/_main"
+    },
+    "/_main/messages/$chatId": {
+      "filePath": "_main/messages/$chatId.tsx",
+      "parent": "/_main"
+    },
+    "/_main/messages/": {
+      "filePath": "_main/messages/index.tsx",
       "parent": "/_main"
     }
   }

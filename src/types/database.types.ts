@@ -9,39 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      _prisma_migrations: {
-        Row: {
-          applied_steps_count: number
-          checksum: string
-          finished_at: string | null
-          id: string
-          logs: string | null
-          migration_name: string
-          rolled_back_at: string | null
-          started_at: string
-        }
-        Insert: {
-          applied_steps_count?: number
-          checksum: string
-          finished_at?: string | null
-          id: string
-          logs?: string | null
-          migration_name: string
-          rolled_back_at?: string | null
-          started_at?: string
-        }
-        Update: {
-          applied_steps_count?: number
-          checksum?: string
-          finished_at?: string | null
-          id?: string
-          logs?: string | null
-          migration_name?: string
-          rolled_back_at?: string | null
-          started_at?: string
-        }
-        Relationships: []
-      }
       books: {
         Row: {
           author: string
@@ -76,6 +43,32 @@ export type Database = {
             columns: ["ownerId"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chats: {
+        Row: {
+          created_at: string | null
+          donation_request_id: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          donation_request_id?: string | null
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          donation_request_id?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chats_donation_request_id_fkey"
+            columns: ["donation_request_id"]
+            isOneToOne: false
+            referencedRelation: "donation_requests"
             referencedColumns: ["id"]
           },
         ]
@@ -134,32 +127,32 @@ export type Database = {
       }
       messages: {
         Row: {
+          chat_id: string | null
           content: string
           createdAt: string
           id: string
-          recipientId: string
           senderId: string
         }
         Insert: {
+          chat_id?: string | null
           content: string
           createdAt?: string
           id?: string
-          recipientId: string
           senderId: string
         }
         Update: {
+          chat_id?: string | null
           content?: string
           createdAt?: string
           id?: string
-          recipientId?: string
           senderId?: string
         }
         Relationships: [
           {
-            foreignKeyName: "messages_recipientId_fkey"
-            columns: ["recipientId"]
+            foreignKeyName: "messages_chat_id_fkey"
+            columns: ["chat_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "chats"
             referencedColumns: ["id"]
           },
           {
@@ -219,18 +212,21 @@ export type Database = {
       users: {
         Row: {
           authUserId: string
+          createdAt: string | null
           email: string
           id: string
           name: string
         }
         Insert: {
           authUserId: string
+          createdAt?: string | null
           email: string
           id?: string
           name: string
         }
         Update: {
           authUserId?: string
+          createdAt?: string | null
           email?: string
           id?: string
           name?: string
@@ -266,6 +262,20 @@ export type Database = {
           donor_name: string
           request_date: string
           status: string
+        }[]
+      }
+      get_user_chats: {
+        Args: {
+          user_id: string
+        }
+        Returns: {
+          id: string
+          created_at: string
+          requester_id: string
+          donor_id: string
+          other_user_name: string
+          last_message: string
+          other_user_id: string
         }[]
       }
       get_user_notifications: {
