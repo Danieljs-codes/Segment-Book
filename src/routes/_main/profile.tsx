@@ -62,7 +62,11 @@ function Profile() {
 								placeholder="Tell us about yourself"
 								rows={4}
 							/>
-							<Button size="small" intent="primary" className="w-full sm:w-auto">
+							<Button
+								size="small"
+								intent="primary"
+								className="w-full sm:w-auto"
+							>
 								Save Changes
 							</Button>
 						</form>
