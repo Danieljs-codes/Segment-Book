@@ -20,7 +20,6 @@ import { useAuth } from "~lib/auth";
 import { toast } from "sonner";
 import { flushSync } from "react-dom";
 import { linkStyles } from "~ui/link";
-import { ComboBox } from "~ui/combo-box";
 
 export const Route = createFileRoute("/_auth/sign-up")({
 	component: SignUpComponent,
@@ -116,6 +115,7 @@ function SignUpComponent() {
 					render={({ field, fieldState: { error } }) => (
 						<TextField
 							label="Full Name"
+							autoComplete="new-fullName"
 							placeholder="Enter your full name"
 							isInvalid={!!error}
 							errorMessage={error?.message}
@@ -129,6 +129,7 @@ function SignUpComponent() {
 					render={({ field, fieldState: { error } }) => (
 						<TextField
 							label="Email"
+							autoComplete="new-email"
 							placeholder="Enter your email"
 							type="email"
 							isInvalid={!!error}
@@ -143,6 +144,7 @@ function SignUpComponent() {
 					render={({ field, fieldState: { error } }) => (
 						<TextField
 							label="Password"
+							autoComplete="new-password"
 							placeholder="Enter your password"
 							type={isPasswordVisible ? "text" : "password"}
 							isInvalid={!!error}
