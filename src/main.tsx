@@ -22,7 +22,8 @@ export const queryClient = new QueryClient();
 const router = createRouter({
 	routeTree,
 	defaultPreload: "intent",
-	defaultPreloadStaleTime: 10 * 1000,
+	// React Query is handling the stale data
+	defaultPreloadStaleTime: 0,
 	defaultPendingMinMs: 100,
 	context: {
 		auth: undefined!,

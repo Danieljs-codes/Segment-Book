@@ -116,7 +116,7 @@ function MainLayout() {
 						shape="circle"
 						size="square-petite"
 					>
-						<IconBell />
+						<IconSearch />
 					</Button>
 					<Menu>
 						<Menu.Trigger>

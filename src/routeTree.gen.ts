@@ -11,9 +11,10 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as PublicImport } from './routes/_public'
 import { Route as MainImport } from './routes/_main'
 import { Route as AuthImport } from './routes/_auth'
-import { Route as IndexImport } from './routes/index'
+import { Route as PublicIndexImport } from './routes/_public/index'
 import { Route as MainRequestsImport } from './routes/_main/requests'
 import { Route as MainProfileImport } from './routes/_main/profile'
 import { Route as MainNotificationsImport } from './routes/_main/notifications'
@@ -26,6 +27,11 @@ import { Route as MainMessagesChatIdImport } from './routes/_main/messages/$chat
 
 // Create/Update Routes
 
+const PublicRoute = PublicImport.update({
+  id: '/_public',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const MainRoute = MainImport.update({
   id: '/_main',
   getParentRoute: () => rootRoute,
@@ -36,9 +42,9 @@ const AuthRoute = AuthImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const IndexRoute = IndexImport.update({
+const PublicIndexRoute = PublicIndexImport.update({
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => PublicRoute,
 } as any)
 
 const MainRequestsRoute = MainRequestsImport.update({
@@ -90,13 +96,6 @@ const MainMessagesChatIdRoute = MainMessagesChatIdImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
     '/_auth': {
       id: '/_auth'
       path: ''
@@ -109,6 +108,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof MainImport
+      parentRoute: typeof rootRoute
+    }
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof PublicImport
       parentRoute: typeof rootRoute
     }
     '/_auth/sign-in': {
@@ -159,6 +165,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/requests'
       preLoaderRoute: typeof MainRequestsImport
       parentRoute: typeof MainImport
+    }
+    '/_public/': {
+      id: '/_public/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof PublicIndexImport
+      parentRoute: typeof PublicImport
     }
     '/_main/messages/$chatId': {
       id: '/_main/messages/$chatId'
@@ -213,9 +226,19 @@ const MainRouteChildren: MainRouteChildren = {
 
 const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 
+interface PublicRouteChildren {
+  PublicIndexRoute: typeof PublicIndexRoute
+}
+
+const PublicRouteChildren: PublicRouteChildren = {
+  PublicIndexRoute: PublicIndexRoute,
+}
+
+const PublicRouteWithChildren =
+  PublicRoute._addFileChildren(PublicRouteChildren)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '': typeof MainRouteWithChildren
+  '': typeof PublicRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/dashboard': typeof MainDashboardRoute
@@ -223,12 +246,12 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof MainNotificationsRoute
   '/profile': typeof MainProfileRoute
   '/requests': typeof MainRequestsRoute
+  '/': typeof PublicIndexRoute
   '/messages/$chatId': typeof MainMessagesChatIdRoute
   '/messages': typeof MainMessagesIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '': typeof MainRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
@@ -237,15 +260,16 @@ export interface FileRoutesByTo {
   '/notifications': typeof MainNotificationsRoute
   '/profile': typeof MainProfileRoute
   '/requests': typeof MainRequestsRoute
+  '/': typeof PublicIndexRoute
   '/messages/$chatId': typeof MainMessagesChatIdRoute
   '/messages': typeof MainMessagesIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/_main': typeof MainRouteWithChildren
+  '/_public': typeof PublicRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_main/dashboard': typeof MainDashboardRoute
@@ -253,6 +277,7 @@ export interface FileRoutesById {
   '/_main/notifications': typeof MainNotificationsRoute
   '/_main/profile': typeof MainProfileRoute
   '/_main/requests': typeof MainRequestsRoute
+  '/_public/': typeof PublicIndexRoute
   '/_main/messages/$chatId': typeof MainMessagesChatIdRoute
   '/_main/messages/': typeof MainMessagesIndexRoute
 }
@@ -260,7 +285,6 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | ''
     | '/sign-in'
     | '/sign-up'
@@ -269,11 +293,11 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/requests'
+    | '/'
     | '/messages/$chatId'
     | '/messages'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | ''
     | '/sign-in'
     | '/sign-up'
@@ -282,13 +306,14 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/requests'
+    | '/'
     | '/messages/$chatId'
     | '/messages'
   id:
     | '__root__'
-    | '/'
     | '/_auth'
     | '/_main'
+    | '/_public'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
     | '/_main/dashboard'
@@ -296,21 +321,22 @@ export interface FileRouteTypes {
     | '/_main/notifications'
     | '/_main/profile'
     | '/_main/requests'
+    | '/_public/'
     | '/_main/messages/$chatId'
     | '/_main/messages/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
   MainRoute: typeof MainRouteWithChildren
+  PublicRoute: typeof PublicRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
   MainRoute: MainRouteWithChildren,
+  PublicRoute: PublicRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -325,13 +351,10 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
         "/_auth",
-        "/_main"
+        "/_main",
+        "/_public"
       ]
-    },
-    "/": {
-      "filePath": "index.tsx"
     },
     "/_auth": {
       "filePath": "_auth.tsx",
@@ -350,6 +373,12 @@ export const routeTree = rootRoute
         "/_main/requests",
         "/_main/messages/$chatId",
         "/_main/messages/"
+      ]
+    },
+    "/_public": {
+      "filePath": "_public.tsx",
+      "children": [
+        "/_public/"
       ]
     },
     "/_auth/sign-in": {
@@ -379,6 +408,10 @@ export const routeTree = rootRoute
     "/_main/requests": {
       "filePath": "_main/requests.tsx",
       "parent": "/_main"
+    },
+    "/_public/": {
+      "filePath": "_public/index.tsx",
+      "parent": "/_public"
     },
     "/_main/messages/$chatId": {
       "filePath": "_main/messages/$chatId.tsx",
