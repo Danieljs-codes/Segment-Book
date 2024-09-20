@@ -13,6 +13,8 @@ interface ThemeContextType {
 let timeoutAction: number | Timer | undefined;
 let timeoutEnable: number | Timer | undefined;
 
+// https://reemus.dev/article/disable-css-transition-color-scheme-change#heading-best-solution---getcomputedstyle
+// https://paco.me/writing/disable-theme-transitions
 // Perform a task without any css transitions
 export const withoutTransition = (action: () => any) => {
 	// Clear fallback timeouts

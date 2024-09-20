@@ -62,7 +62,7 @@ function Profile() {
 								placeholder="Tell us about yourself"
 								rows={4}
 							/>
-							<Button intent="primary" className="w-full sm:w-auto">
+							<Button size="small" intent="primary" className="w-full sm:w-auto">
 								Save Changes
 							</Button>
 						</form>
@@ -90,13 +90,20 @@ function Profile() {
 								type="password"
 								placeholder="Confirm your new password"
 							/>
-							<Button intent="primary" className="w-full sm:w-auto">
+							<Button
+								size="small"
+								intent="primary"
+								className="w-full sm:w-auto"
+							>
 								Update Password
 							</Button>
 						</form>
 					</Card.Content>
 				</Card>
 			</Grid>
+			<p className="text-muted-fg text-sm text-center mt-4">
+				To be Implemented
+			</p>
 		</div>
 	);
 }
