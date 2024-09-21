@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { donorsByIdQueryOptions } from "~lib/query-options";
 import { Heading } from "~ui/heading";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -6,6 +6,8 @@ import { Card } from "~ui/card";
 import { Avatar } from "~ui/avatar";
 import { Badge } from "~ui/badge";
 import { Tabs } from "~ui/tabs";
+import { IconChevronLeft } from "justd-icons";
+import { buttonStyles } from "~ui/button";
 
 export const Route = createFileRoute("/_public/authors/$authorId")({
 	loader: ({ context, params }) => {
@@ -45,6 +47,17 @@ function Author() {
 
 	return (
 		<div>
+			<Link
+				to="/authors"
+				className={buttonStyles({
+					size: "extra-small",
+					appearance: "outline",
+					className: "mb-4",
+				})}
+			>
+				<IconChevronLeft />
+				Back to authors
+			</Link>
 			<Heading className="mb-4" level={2} tracking="tight">
 				Author Profile
 			</Heading>
