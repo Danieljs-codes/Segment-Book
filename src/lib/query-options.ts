@@ -275,3 +275,55 @@ export const chatMessagesQueryOptions = (chatId: string, userId: string) => ({
 		return { messages, otherUser };
 	},
 });
+
+export const bookFiltersQueryOptions = () =>
+	queryOptions({
+		queryKey: ["book-filters"],
+		queryFn: async () => {
+			// TODO: Update Database to include condition column and add conditions to the query
+			// TODO; Add filters to the query
+			const { data, error } = await supabase
+				.from("books")
+				.select(`*,donor:users(id, name)				`, {
+					count: "exact",
+				})
+				.eq("isDonated", false)
+				.order("createdAt", { ascending: false });
+
+			if (error) {
+				console.error("Error fetching book filters:", error);
+				throw new Error(error.message);
+			}
+
+			return data;
+		},
+	});
+
+export const bookQueryOptions = (bookId: string) =>
+	queryOptions({
+		queryKey: ["book", bookId],
+		queryFn: async () => {},
+	});
+
+export function bookByIdQueryOptions(bookId: string) {
+	return {
+		queryKey: ["book", bookId],
+		queryFn: async () => {
+			if (!bookId) return null;
+			const { data, error } = await supabase
+				.from("books")
+				.select("*, donor:users(id, name)")
+				.eq("id", bookId)
+				.limit(1)
+				.single();
+
+			if (error) {
+				console.error("Error fetching book:", error);
+				throw new Error(error.message);
+			}
+
+			return data;
+		},
+		enabled: !!bookId,
+	};
+}

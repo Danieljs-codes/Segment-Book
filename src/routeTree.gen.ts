@@ -22,7 +22,9 @@ import { Route as MainDonationsImport } from './routes/_main/donations'
 import { Route as MainDashboardImport } from './routes/_main/dashboard'
 import { Route as AuthSignUpImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInImport } from './routes/_auth/sign-in'
+import { Route as PublicBooksIndexImport } from './routes/_public/books/index'
 import { Route as MainMessagesIndexImport } from './routes/_main/messages/index'
+import { Route as PublicAuthorsAuthorIdImport } from './routes/_public/authors/$authorId'
 import { Route as MainMessagesChatIdImport } from './routes/_main/messages/$chatId'
 
 // Create/Update Routes
@@ -82,9 +84,19 @@ const AuthSignInRoute = AuthSignInImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
+const PublicBooksIndexRoute = PublicBooksIndexImport.update({
+  path: '/books/',
+  getParentRoute: () => PublicRoute,
+} as any)
+
 const MainMessagesIndexRoute = MainMessagesIndexImport.update({
   path: '/messages/',
   getParentRoute: () => MainRoute,
+} as any)
+
+const PublicAuthorsAuthorIdRoute = PublicAuthorsAuthorIdImport.update({
+  path: '/authors/$authorId',
+  getParentRoute: () => PublicRoute,
 } as any)
 
 const MainMessagesChatIdRoute = MainMessagesChatIdImport.update({
@@ -180,12 +192,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainMessagesChatIdImport
       parentRoute: typeof MainImport
     }
+    '/_public/authors/$authorId': {
+      id: '/_public/authors/$authorId'
+      path: '/authors/$authorId'
+      fullPath: '/authors/$authorId'
+      preLoaderRoute: typeof PublicAuthorsAuthorIdImport
+      parentRoute: typeof PublicImport
+    }
     '/_main/messages/': {
       id: '/_main/messages/'
       path: '/messages'
       fullPath: '/messages'
       preLoaderRoute: typeof MainMessagesIndexImport
       parentRoute: typeof MainImport
+    }
+    '/_public/books/': {
+      id: '/_public/books/'
+      path: '/books'
+      fullPath: '/books'
+      preLoaderRoute: typeof PublicBooksIndexImport
+      parentRoute: typeof PublicImport
     }
   }
 }
@@ -228,10 +254,14 @@ const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 
 interface PublicRouteChildren {
   PublicIndexRoute: typeof PublicIndexRoute
+  PublicAuthorsAuthorIdRoute: typeof PublicAuthorsAuthorIdRoute
+  PublicBooksIndexRoute: typeof PublicBooksIndexRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
   PublicIndexRoute: PublicIndexRoute,
+  PublicAuthorsAuthorIdRoute: PublicAuthorsAuthorIdRoute,
+  PublicBooksIndexRoute: PublicBooksIndexRoute,
 }
 
 const PublicRouteWithChildren =
@@ -248,7 +278,9 @@ export interface FileRoutesByFullPath {
   '/requests': typeof MainRequestsRoute
   '/': typeof PublicIndexRoute
   '/messages/$chatId': typeof MainMessagesChatIdRoute
+  '/authors/$authorId': typeof PublicAuthorsAuthorIdRoute
   '/messages': typeof MainMessagesIndexRoute
+  '/books': typeof PublicBooksIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -262,7 +294,9 @@ export interface FileRoutesByTo {
   '/requests': typeof MainRequestsRoute
   '/': typeof PublicIndexRoute
   '/messages/$chatId': typeof MainMessagesChatIdRoute
+  '/authors/$authorId': typeof PublicAuthorsAuthorIdRoute
   '/messages': typeof MainMessagesIndexRoute
+  '/books': typeof PublicBooksIndexRoute
 }
 
 export interface FileRoutesById {
@@ -279,7 +313,9 @@ export interface FileRoutesById {
   '/_main/requests': typeof MainRequestsRoute
   '/_public/': typeof PublicIndexRoute
   '/_main/messages/$chatId': typeof MainMessagesChatIdRoute
+  '/_public/authors/$authorId': typeof PublicAuthorsAuthorIdRoute
   '/_main/messages/': typeof MainMessagesIndexRoute
+  '/_public/books/': typeof PublicBooksIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -295,7 +331,9 @@ export interface FileRouteTypes {
     | '/requests'
     | '/'
     | '/messages/$chatId'
+    | '/authors/$authorId'
     | '/messages'
+    | '/books'
   fileRoutesByTo: FileRoutesByTo
   to:
     | ''
@@ -308,7 +346,9 @@ export interface FileRouteTypes {
     | '/requests'
     | '/'
     | '/messages/$chatId'
+    | '/authors/$authorId'
     | '/messages'
+    | '/books'
   id:
     | '__root__'
     | '/_auth'
@@ -323,7 +363,9 @@ export interface FileRouteTypes {
     | '/_main/requests'
     | '/_public/'
     | '/_main/messages/$chatId'
+    | '/_public/authors/$authorId'
     | '/_main/messages/'
+    | '/_public/books/'
   fileRoutesById: FileRoutesById
 }
 
@@ -378,7 +420,9 @@ export const routeTree = rootRoute
     "/_public": {
       "filePath": "_public.tsx",
       "children": [
-        "/_public/"
+        "/_public/",
+        "/_public/authors/$authorId",
+        "/_public/books/"
       ]
     },
     "/_auth/sign-in": {
@@ -417,9 +461,17 @@ export const routeTree = rootRoute
       "filePath": "_main/messages/$chatId.tsx",
       "parent": "/_main"
     },
+    "/_public/authors/$authorId": {
+      "filePath": "_public/authors/$authorId.tsx",
+      "parent": "/_public"
+    },
     "/_main/messages/": {
       "filePath": "_main/messages/index.tsx",
       "parent": "/_main"
+    },
+    "/_public/books/": {
+      "filePath": "_public/books/index.tsx",
+      "parent": "/_public"
     }
   }
 }

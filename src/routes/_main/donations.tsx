@@ -118,13 +118,18 @@ function Donations() {
 	return (
 		<div>
 			<div className="mb-6 mt-2">
-				<Heading level={2} tracking="tight">
-					Donations
-				</Heading>
-				<p className="text-xs md:text-sm text-muted-fg">
-					This is the page where you can see all the books you've listed for
-					donation and donated.
-				</p>
+				<div className="flex justify-between items-center">
+					<div>
+						<Heading level={2} tracking="tight">
+							Donations
+						</Heading>
+						<p className="text-xs md:text-sm text-muted-fg">
+							This is the page where you can see all the books you've listed for
+							donation and donated.
+						</p>
+					</div>
+					<Button size="small">Add New Book</Button>
+				</div>
 			</div>
 			<div className="flex justify-end mb-4">
 				<Select

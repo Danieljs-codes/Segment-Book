@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Logo } from "~components/logo";
 import { Avatar } from "~ui/avatar";
 import { Button, buttonStyles } from "~ui/button";
+import { Container } from "~ui/container";
 import { Menu } from "~ui/menu";
 import { Sheet } from "~ui/sheet";
 
@@ -50,7 +51,7 @@ function Home() {
 	return (
 		<div>
 			{/* Top Nav Bar */}
-			<div className="p-4 flex items-center justify-between border-b border-border mb-6">
+			<div className="p-4 flex items-center justify-between border-b border-border">
 				<div className="flex items-center justify-between w-full">
 					<div className="flex items-center gap-x-4">
 						<Logo className="h-8 w-auto" />
@@ -243,6 +244,9 @@ function Home() {
 					</Sheet.Footer>
 				</Sheet.Content>
 			</Sheet>
+			<Container className="py-4">
+				<Outlet />
+			</Container>
 		</div>
 	);
 }

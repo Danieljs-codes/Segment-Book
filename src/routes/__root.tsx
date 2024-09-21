@@ -1,5 +1,8 @@
 import type { QueryClient } from "@tanstack/react-query";
-import { createRootRouteWithContext } from "@tanstack/react-router";
+import {
+	createRootRouteWithContext,
+	ScrollRestoration,
+} from "@tanstack/react-router";
 import { Outlet } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import type { AuthContextType } from "~lib/auth";
@@ -29,6 +32,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function RootComponent() {
 	return (
 		<>
+			<ScrollRestoration />
 			<Outlet />
 			<Suspense>
 				<TanStackRouterDevtools />

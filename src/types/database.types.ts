@@ -12,28 +12,34 @@ export type Database = {
       books: {
         Row: {
           author: string
+          condition: string
           createdAt: string
           description: string | null
           id: string
           isDonated: boolean
+          language: string
           ownerId: string
           title: string
         }
         Insert: {
           author: string
+          condition: string
           createdAt?: string
           description?: string | null
           id?: string
           isDonated?: boolean
+          language: string
           ownerId: string
           title: string
         }
         Update: {
           author?: string
+          condition?: string
           createdAt?: string
           description?: string | null
           id?: string
           isDonated?: boolean
+          language?: string
           ownerId?: string
           title?: string
         }
