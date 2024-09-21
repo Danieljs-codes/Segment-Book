@@ -218,21 +218,21 @@ export type Database = {
       users: {
         Row: {
           authUserId: string
-          createdAt: string | null
+          createdAt: string
           email: string
           id: string
           name: string
         }
         Insert: {
           authUserId: string
-          createdAt?: string | null
+          createdAt?: string
           email: string
           id?: string
           name: string
         }
         Update: {
           authUserId?: string
-          createdAt?: string | null
+          createdAt?: string
           email?: string
           id?: string
           name?: string

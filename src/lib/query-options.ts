@@ -327,3 +327,36 @@ export function bookByIdQueryOptions(bookId: string) {
 		enabled: !!bookId,
 	};
 }
+
+export const allDonorsQueryOptions = () =>
+	queryOptions({
+		queryKey: ["all-donors"],
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from("users")
+				.select(`
+					*,
+					donated_books:books(count)
+				`)
+				.eq("books.isDonated", true);
+
+			if (error) {
+				console.error("Error fetching all donors:", error);
+				throw new Error(error.message);
+			}
+
+			const sortedData = data.sort(
+				(a, b) =>
+					(b.donated_books[0]?.count || 0) - (a.donated_books[0]?.count || 0),
+			);
+
+			return sortedData.map((donor) => ({
+				...donor,
+				donated_books: donor.donated_books[0]?.count || 0,
+			}));
+		},
+	});
+
+	export const donorsByIdQueryOptions = (userId: string) => queryOptions({
+		queryKey: ["donors-by-id", userId],
+	})

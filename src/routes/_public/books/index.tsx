@@ -11,7 +11,6 @@ import {
 } from "justd-icons";
 import { useState } from "react";
 import { toast } from "sonner";
-import { z } from "zod";
 import {
 	bookFiltersQueryOptions,
 	bookByIdQueryOptions,
@@ -21,13 +20,8 @@ import { Button } from "~ui/button";
 import { Card } from "~ui/card";
 import { Heading } from "~ui/heading";
 import { Modal } from "~ui/modal";
-import { cn } from "~ui/primitive";
 import { SearchField } from "~ui/search-field";
 import { Select } from "~ui/select";
-
-const bookSearchParamsSchema = z.object({
-	bookId: z.string().optional(),
-});
 
 export const Route = createFileRoute("/_public/books/")({
 	loader: ({ context }) => {
