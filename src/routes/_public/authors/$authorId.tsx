@@ -105,7 +105,7 @@ function Author() {
 				</Card>
 			</div>
 			<div>
-				<Tabs className="w-fit">
+				<Tabs>
 					<Tabs.List>
 						<Tabs.Tab id="books-donated">
 							Donated Books ({booksListedAndDonated.length})
@@ -116,7 +116,7 @@ function Author() {
 					</Tabs.List>
 					<Tabs.Panel id="books-donated">
 						{booksListedAndDonated.length > 0 ? (
-							<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+							<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 								{booksListedAndDonated.map((book) => (
 									<Card
 										key={book.id}
@@ -171,7 +171,7 @@ function Author() {
 					</Tabs.Panel>
 					<Tabs.Panel id="books-listed">
 						{booksListedButNotDonated.length > 0 ? (
-							<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+							<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 								{booksListedButNotDonated.map((book) => (
 									<Card
 										key={book.id}

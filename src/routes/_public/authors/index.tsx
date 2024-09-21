@@ -22,7 +22,7 @@ function Authors() {
 			<Heading className="mb-4" level={2} tracking="tight">
 				Our Generous Donors
 			</Heading>
-			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 				{donors.map((donor) => (
 					<Card key={donor.id}>
 						<Card.Header className="flex flex-row items-center gap-4">
