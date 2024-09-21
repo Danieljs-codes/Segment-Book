@@ -312,7 +312,13 @@ export function bookByIdQueryOptions(bookId: string) {
 			if (!bookId) return null;
 			const { data, error } = await supabase
 				.from("books")
-				.select("*, donor:users(id, name)")
+				.select(`
+        *,
+        donor:users(id, name),
+        book_categories (
+            category:categories(id, name)
+        )
+    `)
 				.eq("id", bookId)
 				.limit(1)
 				.single();

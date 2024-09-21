@@ -15,6 +15,7 @@ import {
 	IconChevronLgDown,
 	IconMoon,
 	IconSun,
+	IconHome,
 } from "justd-icons";
 import { toast } from "sonner";
 import { Logo } from "~components/logo";
@@ -127,6 +128,10 @@ function MainLayout() {
 							/>
 						</Menu.Trigger>
 						<Menu.Content>
+							<Menu.Item href="/" className="text-sm">
+								<IconHome />
+								Home
+							</Menu.Item>
 							<Menu.Item className="text-sm">
 								<IconContacts />
 								Profile
@@ -194,7 +199,11 @@ function MainLayout() {
 							</Button>
 
 							<Menu.Content className="min-w-[--trigger-width]">
-								<Menu.Item>
+								<Menu.Item href="/">
+									<IconHome />
+									Home
+								</Menu.Item>
+								<Menu.Item href="/profile">
 									<IconContacts />
 									Profile
 								</Menu.Item>

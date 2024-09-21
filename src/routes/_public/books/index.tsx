@@ -5,7 +5,6 @@ import {
 	IconCalendar,
 	IconContacts,
 	IconGlobe,
-	IconMap,
 	IconPlus,
 	IconPriceTag,
 } from "justd-icons";
@@ -110,14 +109,8 @@ function Books() {
 								toast.error("You must be signed in to add a book.");
 								return;
 							}
-
 							navigate({
-								to: "/donations",
-								search: {
-									status: "all",
-									page: 1,
-									pageSize: 10,
-								},
+								to: "/donations/new",
 							});
 						}}
 						intent="primary"
@@ -178,7 +171,7 @@ function Books() {
 				onOpenChange={(isOpen) => !isOpen && setSelectedBookId(null)}
 			>
 				{!isFetching && !error && (
-					<Modal.Content isBlurred size="2xl">
+					<Modal.Content isBlurred size="3xl">
 						<Modal.Header>
 							<Modal.Title>{selectedBook?.title}</Modal.Title>
 							<Modal.Description>by {selectedBook?.author}</Modal.Description>
@@ -213,14 +206,20 @@ function Books() {
 											<IconContacts />
 											{selectedBook?.donor?.name}
 										</Badge>
-										<Badge shape="circle" className="w-fit">
-											<IconPriceTag />
-											Fiction
-										</Badge>
-										<Badge shape="circle" className="w-fit">
-											<IconMap />
-											New York, NY
-										</Badge>
+									</div>
+									<div className="mt-2">
+										<p className="text-muted-fg text-sm mb-1">Categories:</p>
+										<div className="flex gap-2 items-center flex-wrap">
+											{selectedBook?.book_categories.map((bookCategory) => (
+												<Badge
+													key={bookCategory.category?.id}
+													className="w-fit"
+												>
+													<IconPriceTag />
+													{bookCategory.category?.name}
+												</Badge>
+											))}
+										</div>
 									</div>
 								</div>
 							</div>
