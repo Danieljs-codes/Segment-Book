@@ -357,6 +357,24 @@ export const allDonorsQueryOptions = () =>
 		},
 	});
 
-	export const donorsByIdQueryOptions = (userId: string) => queryOptions({
+export const donorsByIdQueryOptions = (userId: string) =>
+	queryOptions({
 		queryKey: ["donors-by-id", userId],
-	})
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from("books")
+				.select(`
+					*,
+					donor:users(id, name, email, createdAt)
+				`)
+				.eq("ownerId", userId)
+				.order("createdAt", { ascending: false });
+
+			if (error) {
+				console.error("Error fetching donors by id:", error);
+				throw new Error(error.message);
+			}
+
+			return data;
+		},
+	});
