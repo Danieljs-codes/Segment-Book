@@ -2,6 +2,7 @@ import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import {
 	IconBell,
 	IconContacts,
+	IconDashboard,
 	IconFolderDelete,
 	IconHamburger,
 	IconLogout,
@@ -90,6 +91,10 @@ function Home() {
 									<Avatar src={`https://i.pravatar.cc/300?u=${"irsyadadl"}`} />
 								</Menu.Trigger>
 								<Menu.Content className="min-w-[180px]">
+									<Menu.Item href="/dashboard">
+										<IconDashboard />
+										Dashboard
+									</Menu.Item>
 									<Menu.Item>
 										<IconContacts />
 										Profile
@@ -198,20 +203,24 @@ function Home() {
 									</div>
 								</Menu.Trigger>
 								<Menu.Content className="min-w-[180px]">
-									<Menu.Item>
+									<Menu.Item href="/dashboard" className="text-sm">
+										<IconDashboard />
+										Dashboard
+									</Menu.Item>
+									<Menu.Item className="text-sm">
 										<IconContacts />
 										Profile
 									</Menu.Item>
-									<Menu.Item>
+									<Menu.Item className="text-sm">
 										<IconSettings />
 										Settings
 									</Menu.Item>
-									<Menu.Item>
+									<Menu.Item className="text-sm">
 										<IconLogout />
 										Sign out
 									</Menu.Item>
 									<Menu.Separator />
-									<Menu.Item isDanger>
+									<Menu.Item className="text-sm" isDanger>
 										<IconFolderDelete />
 										Delete Account
 									</Menu.Item>

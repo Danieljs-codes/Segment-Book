@@ -18,15 +18,16 @@ import { Route as PublicIndexImport } from './routes/_public/index'
 import { Route as MainRequestsImport } from './routes/_main/requests'
 import { Route as MainProfileImport } from './routes/_main/profile'
 import { Route as MainNotificationsImport } from './routes/_main/notifications'
-import { Route as MainDonationsImport } from './routes/_main/donations'
 import { Route as MainDashboardImport } from './routes/_main/dashboard'
 import { Route as AuthSignUpImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInImport } from './routes/_auth/sign-in'
 import { Route as PublicBooksIndexImport } from './routes/_public/books/index'
 import { Route as PublicAuthorsIndexImport } from './routes/_public/authors/index'
 import { Route as MainMessagesIndexImport } from './routes/_main/messages/index'
+import { Route as MainDonationsIndexImport } from './routes/_main/donations/index'
 import { Route as PublicAuthorsAuthorIdImport } from './routes/_public/authors/$authorId'
 import { Route as MainMessagesChatIdImport } from './routes/_main/messages/$chatId'
+import { Route as MainDonationsNewImport } from './routes/_main/donations/new'
 
 // Create/Update Routes
 
@@ -65,11 +66,6 @@ const MainNotificationsRoute = MainNotificationsImport.update({
   getParentRoute: () => MainRoute,
 } as any)
 
-const MainDonationsRoute = MainDonationsImport.update({
-  path: '/donations',
-  getParentRoute: () => MainRoute,
-} as any)
-
 const MainDashboardRoute = MainDashboardImport.update({
   path: '/dashboard',
   getParentRoute: () => MainRoute,
@@ -100,6 +96,11 @@ const MainMessagesIndexRoute = MainMessagesIndexImport.update({
   getParentRoute: () => MainRoute,
 } as any)
 
+const MainDonationsIndexRoute = MainDonationsIndexImport.update({
+  path: '/donations/',
+  getParentRoute: () => MainRoute,
+} as any)
+
 const PublicAuthorsAuthorIdRoute = PublicAuthorsAuthorIdImport.update({
   path: '/authors/$authorId',
   getParentRoute: () => PublicRoute,
@@ -107,6 +108,11 @@ const PublicAuthorsAuthorIdRoute = PublicAuthorsAuthorIdImport.update({
 
 const MainMessagesChatIdRoute = MainMessagesChatIdImport.update({
   path: '/messages/$chatId',
+  getParentRoute: () => MainRoute,
+} as any)
+
+const MainDonationsNewRoute = MainDonationsNewImport.update({
+  path: '/donations/new',
   getParentRoute: () => MainRoute,
 } as any)
 
@@ -156,13 +162,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainDashboardImport
       parentRoute: typeof MainImport
     }
-    '/_main/donations': {
-      id: '/_main/donations'
-      path: '/donations'
-      fullPath: '/donations'
-      preLoaderRoute: typeof MainDonationsImport
-      parentRoute: typeof MainImport
-    }
     '/_main/notifications': {
       id: '/_main/notifications'
       path: '/notifications'
@@ -191,6 +190,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexImport
       parentRoute: typeof PublicImport
     }
+    '/_main/donations/new': {
+      id: '/_main/donations/new'
+      path: '/donations/new'
+      fullPath: '/donations/new'
+      preLoaderRoute: typeof MainDonationsNewImport
+      parentRoute: typeof MainImport
+    }
     '/_main/messages/$chatId': {
       id: '/_main/messages/$chatId'
       path: '/messages/$chatId'
@@ -204,6 +210,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/authors/$authorId'
       preLoaderRoute: typeof PublicAuthorsAuthorIdImport
       parentRoute: typeof PublicImport
+    }
+    '/_main/donations/': {
+      id: '/_main/donations/'
+      path: '/donations'
+      fullPath: '/donations'
+      preLoaderRoute: typeof MainDonationsIndexImport
+      parentRoute: typeof MainImport
     }
     '/_main/messages/': {
       id: '/_main/messages/'
@@ -245,21 +258,23 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface MainRouteChildren {
   MainDashboardRoute: typeof MainDashboardRoute
-  MainDonationsRoute: typeof MainDonationsRoute
   MainNotificationsRoute: typeof MainNotificationsRoute
   MainProfileRoute: typeof MainProfileRoute
   MainRequestsRoute: typeof MainRequestsRoute
+  MainDonationsNewRoute: typeof MainDonationsNewRoute
   MainMessagesChatIdRoute: typeof MainMessagesChatIdRoute
+  MainDonationsIndexRoute: typeof MainDonationsIndexRoute
   MainMessagesIndexRoute: typeof MainMessagesIndexRoute
 }
 
 const MainRouteChildren: MainRouteChildren = {
   MainDashboardRoute: MainDashboardRoute,
-  MainDonationsRoute: MainDonationsRoute,
   MainNotificationsRoute: MainNotificationsRoute,
   MainProfileRoute: MainProfileRoute,
   MainRequestsRoute: MainRequestsRoute,
+  MainDonationsNewRoute: MainDonationsNewRoute,
   MainMessagesChatIdRoute: MainMessagesChatIdRoute,
+  MainDonationsIndexRoute: MainDonationsIndexRoute,
   MainMessagesIndexRoute: MainMessagesIndexRoute,
 }
 
@@ -287,13 +302,14 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/dashboard': typeof MainDashboardRoute
-  '/donations': typeof MainDonationsRoute
   '/notifications': typeof MainNotificationsRoute
   '/profile': typeof MainProfileRoute
   '/requests': typeof MainRequestsRoute
   '/': typeof PublicIndexRoute
+  '/donations/new': typeof MainDonationsNewRoute
   '/messages/$chatId': typeof MainMessagesChatIdRoute
   '/authors/$authorId': typeof PublicAuthorsAuthorIdRoute
+  '/donations': typeof MainDonationsIndexRoute
   '/messages': typeof MainMessagesIndexRoute
   '/authors': typeof PublicAuthorsIndexRoute
   '/books': typeof PublicBooksIndexRoute
@@ -304,13 +320,14 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/dashboard': typeof MainDashboardRoute
-  '/donations': typeof MainDonationsRoute
   '/notifications': typeof MainNotificationsRoute
   '/profile': typeof MainProfileRoute
   '/requests': typeof MainRequestsRoute
   '/': typeof PublicIndexRoute
+  '/donations/new': typeof MainDonationsNewRoute
   '/messages/$chatId': typeof MainMessagesChatIdRoute
   '/authors/$authorId': typeof PublicAuthorsAuthorIdRoute
+  '/donations': typeof MainDonationsIndexRoute
   '/messages': typeof MainMessagesIndexRoute
   '/authors': typeof PublicAuthorsIndexRoute
   '/books': typeof PublicBooksIndexRoute
@@ -324,13 +341,14 @@ export interface FileRoutesById {
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_main/dashboard': typeof MainDashboardRoute
-  '/_main/donations': typeof MainDonationsRoute
   '/_main/notifications': typeof MainNotificationsRoute
   '/_main/profile': typeof MainProfileRoute
   '/_main/requests': typeof MainRequestsRoute
   '/_public/': typeof PublicIndexRoute
+  '/_main/donations/new': typeof MainDonationsNewRoute
   '/_main/messages/$chatId': typeof MainMessagesChatIdRoute
   '/_public/authors/$authorId': typeof PublicAuthorsAuthorIdRoute
+  '/_main/donations/': typeof MainDonationsIndexRoute
   '/_main/messages/': typeof MainMessagesIndexRoute
   '/_public/authors/': typeof PublicAuthorsIndexRoute
   '/_public/books/': typeof PublicBooksIndexRoute
@@ -343,13 +361,14 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/dashboard'
-    | '/donations'
     | '/notifications'
     | '/profile'
     | '/requests'
     | '/'
+    | '/donations/new'
     | '/messages/$chatId'
     | '/authors/$authorId'
+    | '/donations'
     | '/messages'
     | '/authors'
     | '/books'
@@ -359,13 +378,14 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/dashboard'
-    | '/donations'
     | '/notifications'
     | '/profile'
     | '/requests'
     | '/'
+    | '/donations/new'
     | '/messages/$chatId'
     | '/authors/$authorId'
+    | '/donations'
     | '/messages'
     | '/authors'
     | '/books'
@@ -377,13 +397,14 @@ export interface FileRouteTypes {
     | '/_auth/sign-in'
     | '/_auth/sign-up'
     | '/_main/dashboard'
-    | '/_main/donations'
     | '/_main/notifications'
     | '/_main/profile'
     | '/_main/requests'
     | '/_public/'
+    | '/_main/donations/new'
     | '/_main/messages/$chatId'
     | '/_public/authors/$authorId'
+    | '/_main/donations/'
     | '/_main/messages/'
     | '/_public/authors/'
     | '/_public/books/'
@@ -430,11 +451,12 @@ export const routeTree = rootRoute
       "filePath": "_main.tsx",
       "children": [
         "/_main/dashboard",
-        "/_main/donations",
         "/_main/notifications",
         "/_main/profile",
         "/_main/requests",
+        "/_main/donations/new",
         "/_main/messages/$chatId",
+        "/_main/donations/",
         "/_main/messages/"
       ]
     },
@@ -459,10 +481,6 @@ export const routeTree = rootRoute
       "filePath": "_main/dashboard.tsx",
       "parent": "/_main"
     },
-    "/_main/donations": {
-      "filePath": "_main/donations.tsx",
-      "parent": "/_main"
-    },
     "/_main/notifications": {
       "filePath": "_main/notifications.tsx",
       "parent": "/_main"
@@ -479,6 +497,10 @@ export const routeTree = rootRoute
       "filePath": "_public/index.tsx",
       "parent": "/_public"
     },
+    "/_main/donations/new": {
+      "filePath": "_main/donations/new.tsx",
+      "parent": "/_main"
+    },
     "/_main/messages/$chatId": {
       "filePath": "_main/messages/$chatId.tsx",
       "parent": "/_main"
@@ -486,6 +508,10 @@ export const routeTree = rootRoute
     "/_public/authors/$authorId": {
       "filePath": "_public/authors/$authorId.tsx",
       "parent": "/_public"
+    },
+    "/_main/donations/": {
+      "filePath": "_main/donations/index.tsx",
+      "parent": "/_main"
     },
     "/_main/messages/": {
       "filePath": "_main/messages/index.tsx",

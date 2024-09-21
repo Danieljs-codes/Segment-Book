@@ -1,5 +1,5 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	IconCheck,
 	IconChevronLeft,
@@ -12,13 +12,15 @@ import { useState } from "react";
 import { z } from "zod";
 import { userDonatedBooksQueryOptions } from "~lib/query-options";
 import { Badge } from "~ui/badge";
-import { Button } from "~ui/button";
+import { Button, buttonStyles } from "~ui/button";
 import { Card } from "~ui/card";
 import { Heading } from "~ui/heading";
 import { Menu } from "~ui/menu";
 import { Select } from "~ui/select";
 import { Table } from "~ui/table";
 import { Skeleton } from "~ui/skeleton";
+import { useMediaQuery } from "~ui/primitive";
+import { Modal } from "~ui/modal";
 
 const donationFilterSchema = z.object({
 	status: z.enum(["donated", "notDonated", "all"]).default("all").catch("all"),
@@ -54,7 +56,7 @@ function DonationsPending() {
 	);
 }
 
-export const Route = createFileRoute("/_main/donations")({
+export const Route = createFileRoute("/_main/donations/")({
 	pendingComponent: DonationsPending,
 	validateSearch: donationFilterSchema,
 	loaderDeps: ({ search: { page, pageSize, status } }) => ({
@@ -91,6 +93,8 @@ const filterOptions = [
 ];
 
 function Donations() {
+	const [isOpen, setIsOpen] = useState(false);
+	const isMobile = useMediaQuery("(max-width: 600px)");
 	const { search } = Route.useLoaderData();
 	const navigate = Route.useNavigate();
 	const {
@@ -118,7 +122,7 @@ function Donations() {
 	return (
 		<div>
 			<div className="mb-6 mt-2">
-				<div className="flex justify-between items-center">
+				<div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
 					<div>
 						<Heading level={2} tracking="tight">
 							Donations
@@ -128,7 +132,14 @@ function Donations() {
 							donation and donated.
 						</p>
 					</div>
-					<Button size="small">Add New Book</Button>
+					<Link
+						to="/donations/new"
+						className={buttonStyles({
+							size: isMobile ? "extra-small" : "small",
+						})}
+					>
+						Add New Book
+					</Link>
 				</div>
 			</div>
 			<div className="flex justify-end mb-4">
