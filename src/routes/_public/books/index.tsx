@@ -1,7 +1,15 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { IconPlus } from "justd-icons";
-import { useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import {
+	IconBookOpen,
+	IconCalendar,
+	IconContacts,
+	IconGlobe,
+	IconMap,
+	IconPlus,
+	IconPriceTag,
+} from "justd-icons";
+import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import {
@@ -22,7 +30,6 @@ const bookSearchParamsSchema = z.object({
 });
 
 export const Route = createFileRoute("/_public/books/")({
-	validateSearch: bookSearchParamsSchema,
 	loader: ({ context }) => {
 		context.queryClient.ensureQueryData(bookFiltersQueryOptions());
 		return {
@@ -52,9 +59,13 @@ function getBadgeIntent(condition: string) {
 function Books() {
 	const { data: bookFilters } = useSuspenseQuery(bookFiltersQueryOptions());
 	const { userId } = Route.useLoaderData();
-	const { bookId } = Route.useSearch();
+	const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
 
-	const { data: selectedBook } = useQuery(bookByIdQueryOptions(bookId ?? ""));
+	const {
+		data: selectedBook,
+		isFetching,
+		error,
+	} = useQuery(bookByIdQueryOptions(selectedBookId ?? ""));
 
 	const navigate = Route.useNavigate();
 	return (
@@ -68,6 +79,7 @@ function Books() {
 					placeholder="Search books"
 					className="w-full"
 				/>
+
 				<div className="flex w-full sm:w-auto gap-2">
 					<Select
 						defaultSelectedKey={"all_conditions"}
@@ -124,69 +136,115 @@ function Books() {
 			</div>
 			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 				{bookFilters.map((book) => (
-					<Link
-						to="/books"
-						search={{
-							bookId: book.id,
-						}}
+					<Card
 						key={book.id}
+						className="overflow-hidden cursor-pointer"
+						onClick={() => setSelectedBookId(book.id)}
 					>
-						<Card className="overflow-hidden">
-							<Card.Header withoutPadding className="py-3">
-								<img
-									src="https://placehold.co/400x200"
-									alt="Book cover placeholder"
-									className="w-full h-auto object-cover"
-								/>
-							</Card.Header>
-							<Card.Content className="px-4 pb-4">
-								<div>
-									<div className="flex items-center gap-x-2 justify-between">
-										<h2 className="text-base font-semibold">{book.title}</h2>
-										<Badge
-											className="capitalize"
-											intent={getBadgeIntent(book.condition)}
-										>
-											{book.condition}
-										</Badge>
-									</div>
-									<p className="text-sm text-muted-fg mb-2">{book.author}</p>
-									<p className="text-xs text-muted-fg">
-										<span className="font-medium text-fg">Listed on:</span>{" "}
-										{new Date(book.createdAt).toLocaleDateString("en-US", {
-											year: "numeric",
-											month: "short",
-											day: "numeric",
-										})}
-									</p>
-									<p className="text-xs text-muted-fg mt-1">
-										<span className="font-medium text-fg">Listed by:</span>{" "}
-										{book.donor?.name}
-									</p>
+						<Card.Header withoutPadding className="py-3">
+							<img
+								src="https://placehold.co/400x200"
+								alt="Book cover placeholder"
+								className="w-full h-auto object-cover"
+							/>
+						</Card.Header>
+						<Card.Content className="px-4 pb-4">
+							<div>
+								<div className="flex items-center gap-x-2 justify-between">
+									<h2 className="text-base font-semibold select-none">
+										{book.title}
+									</h2>
+									<Badge
+										className="capitalize"
+										intent={getBadgeIntent(book.condition)}
+									>
+										{book.condition}
+									</Badge>
 								</div>
-							</Card.Content>
-						</Card>
-					</Link>
+								<p className="text-sm text-muted-fg mb-2">{book.author}</p>
+								<p className="text-xs text-muted-fg">
+									<span className="font-medium text-fg">Listed on:</span>{" "}
+									{new Date(book.createdAt).toLocaleDateString("en-US", {
+										year: "numeric",
+										month: "short",
+										day: "numeric",
+									})}
+								</p>
+								<p className="text-xs text-muted-fg mt-1">
+									<span className="font-medium text-fg">Listed by:</span>{" "}
+									{book.donor?.name}
+								</p>
+							</div>
+						</Card.Content>
+					</Card>
 				))}
 			</div>
-			<Modal>
-				{selectedBook && (
-					<Modal.Content
-						// role="alertdialog"
-						isOpen={!!bookId}
-						onOpenChange={() =>
-							navigate({ search: (prev) => ({ ...prev, bookId: undefined }) })
-						}
-					>
+			<Modal
+				isOpen={!!selectedBookId}
+				onOpenChange={(isOpen) => !isOpen && setSelectedBookId(null)}
+			>
+				{!isFetching && !error && (
+					<Modal.Content isBlurred size="2xl">
 						<Modal.Header>
-							<Modal.Title>{selectedBook.title}</Modal.Title>
-							<Modal.Description>by {selectedBook.author}</Modal.Description>
+							<Modal.Title>{selectedBook?.title}</Modal.Title>
+							<Modal.Description>by {selectedBook?.author}</Modal.Description>
 						</Modal.Header>
 						<Modal.Body>
-							<div className="grid gap"></div>
+							<div className="flex flex-col md:flex-row gap-4">
+								<div className="rounded-lg overflow-hidden">
+									<img src="https://placehold.co/400x200" alt="Book cover" />
+								</div>
+								<div>
+									<h3 className="text-muted-fg text-sm">
+										{selectedBook?.description}
+									</h3>
+									<div className="grid grid-cols-2 gap-2 mt-4">
+										<Badge shape="circle" className="w-fit capitalize">
+											<IconBookOpen />
+											{selectedBook?.condition}
+										</Badge>
+										<Badge shape="circle" className="w-fit">
+											<IconGlobe />
+											{selectedBook?.language}
+										</Badge>
+										<Badge shape="circle" className="w-fit">
+											<IconCalendar />
+											{selectedBook?.createdAt &&
+												new Date(selectedBook.createdAt).toLocaleDateString(
+													"en-US",
+													{ year: "numeric", month: "short", day: "numeric" },
+												)}
+										</Badge>
+										<Badge shape="circle" className="w-fit">
+											<IconContacts />
+											{selectedBook?.donor?.name}
+										</Badge>
+										<Badge shape="circle" className="w-fit">
+											<IconPriceTag />
+											Fiction
+										</Badge>
+										<Badge shape="circle" className="w-fit">
+											<IconMap />
+											New York, NY
+										</Badge>
+									</div>
+								</div>
+							</div>
 						</Modal.Body>
 						<Modal.Footer>
-							<Modal.Close size="extra-small">Close</Modal.Close>
+							<Button
+								onPress={() => {
+									if (!userId) {
+										toast.error("Please login to request a book");
+										return;
+									}
+
+									// TODO: Add request book mutation
+								}}
+								size="small"
+							>
+								Request Book
+							</Button>
 						</Modal.Footer>
 					</Modal.Content>
 				)}

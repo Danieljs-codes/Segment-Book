@@ -23,6 +23,7 @@ import { Route as MainDashboardImport } from './routes/_main/dashboard'
 import { Route as AuthSignUpImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInImport } from './routes/_auth/sign-in'
 import { Route as PublicBooksIndexImport } from './routes/_public/books/index'
+import { Route as PublicAuthorsIndexImport } from './routes/_public/authors/index'
 import { Route as MainMessagesIndexImport } from './routes/_main/messages/index'
 import { Route as PublicAuthorsAuthorIdImport } from './routes/_public/authors/$authorId'
 import { Route as MainMessagesChatIdImport } from './routes/_main/messages/$chatId'
@@ -86,6 +87,11 @@ const AuthSignInRoute = AuthSignInImport.update({
 
 const PublicBooksIndexRoute = PublicBooksIndexImport.update({
   path: '/books/',
+  getParentRoute: () => PublicRoute,
+} as any)
+
+const PublicAuthorsIndexRoute = PublicAuthorsIndexImport.update({
+  path: '/authors/',
   getParentRoute: () => PublicRoute,
 } as any)
 
@@ -206,6 +212,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainMessagesIndexImport
       parentRoute: typeof MainImport
     }
+    '/_public/authors/': {
+      id: '/_public/authors/'
+      path: '/authors'
+      fullPath: '/authors'
+      preLoaderRoute: typeof PublicAuthorsIndexImport
+      parentRoute: typeof PublicImport
+    }
     '/_public/books/': {
       id: '/_public/books/'
       path: '/books'
@@ -255,12 +268,14 @@ const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 interface PublicRouteChildren {
   PublicIndexRoute: typeof PublicIndexRoute
   PublicAuthorsAuthorIdRoute: typeof PublicAuthorsAuthorIdRoute
+  PublicAuthorsIndexRoute: typeof PublicAuthorsIndexRoute
   PublicBooksIndexRoute: typeof PublicBooksIndexRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
   PublicIndexRoute: PublicIndexRoute,
   PublicAuthorsAuthorIdRoute: PublicAuthorsAuthorIdRoute,
+  PublicAuthorsIndexRoute: PublicAuthorsIndexRoute,
   PublicBooksIndexRoute: PublicBooksIndexRoute,
 }
 
@@ -280,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/messages/$chatId': typeof MainMessagesChatIdRoute
   '/authors/$authorId': typeof PublicAuthorsAuthorIdRoute
   '/messages': typeof MainMessagesIndexRoute
+  '/authors': typeof PublicAuthorsIndexRoute
   '/books': typeof PublicBooksIndexRoute
 }
 
@@ -296,6 +312,7 @@ export interface FileRoutesByTo {
   '/messages/$chatId': typeof MainMessagesChatIdRoute
   '/authors/$authorId': typeof PublicAuthorsAuthorIdRoute
   '/messages': typeof MainMessagesIndexRoute
+  '/authors': typeof PublicAuthorsIndexRoute
   '/books': typeof PublicBooksIndexRoute
 }
 
@@ -315,6 +332,7 @@ export interface FileRoutesById {
   '/_main/messages/$chatId': typeof MainMessagesChatIdRoute
   '/_public/authors/$authorId': typeof PublicAuthorsAuthorIdRoute
   '/_main/messages/': typeof MainMessagesIndexRoute
+  '/_public/authors/': typeof PublicAuthorsIndexRoute
   '/_public/books/': typeof PublicBooksIndexRoute
 }
 
@@ -333,6 +351,7 @@ export interface FileRouteTypes {
     | '/messages/$chatId'
     | '/authors/$authorId'
     | '/messages'
+    | '/authors'
     | '/books'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -348,6 +367,7 @@ export interface FileRouteTypes {
     | '/messages/$chatId'
     | '/authors/$authorId'
     | '/messages'
+    | '/authors'
     | '/books'
   id:
     | '__root__'
@@ -365,6 +385,7 @@ export interface FileRouteTypes {
     | '/_main/messages/$chatId'
     | '/_public/authors/$authorId'
     | '/_main/messages/'
+    | '/_public/authors/'
     | '/_public/books/'
   fileRoutesById: FileRoutesById
 }
@@ -422,6 +443,7 @@ export const routeTree = rootRoute
       "children": [
         "/_public/",
         "/_public/authors/$authorId",
+        "/_public/authors/",
         "/_public/books/"
       ]
     },
@@ -468,6 +490,10 @@ export const routeTree = rootRoute
     "/_main/messages/": {
       "filePath": "_main/messages/index.tsx",
       "parent": "/_main"
+    },
+    "/_public/authors/": {
+      "filePath": "_public/authors/index.tsx",
+      "parent": "/_public"
     },
     "/_public/books/": {
       "filePath": "_public/books/index.tsx",
