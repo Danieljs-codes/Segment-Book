@@ -3,7 +3,7 @@ import { cn } from "~ui/primitive";
 
 interface EmptyStateProps {
 	title: string;
-	description: string;
+	description: string | React.ReactNode;
 	icon?: React.ComponentType;
 	children?: React.ReactNode;
 	className?: string;
@@ -27,9 +27,16 @@ function EmptyState({
 		<div className={cn("flex flex-col items-center text-center", className)}>
 			{Icon && <EmptyStateIcon icon={Icon} className="mb-4" />}
 			<h3 className="text-base font-semibold">{title}</h3>
-			<p className="mt-2 text-sm leading-tight text-pretty text-muted-fg">
-				{description}
-			</p>
+			{typeof description === "string" && (
+				<p className="mt-2 text-sm leading-tight text-pretty text-muted-fg">
+					{description}
+				</p>
+			)}
+			{typeof description === "object" && (
+				<div className="mt-2 text-sm leading-tight text-pretty text-muted-fg">
+					{description}
+				</div>
+			)}
 			{children && <div className="mt-6 flex gap-3">{children}</div>}
 		</div>
 	);

@@ -314,6 +314,15 @@ export type Database = {
         }
         Returns: string
       }
+      create_notification: {
+        Args: {
+          sender_id: string
+          receiver_id: string
+          title: string
+          content: string
+        }
+        Returns: undefined
+      }
       get_active_requests_received: {
         Args: {
           user_id: string

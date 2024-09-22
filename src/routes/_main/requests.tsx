@@ -19,7 +19,7 @@ import { Table } from "~ui/table";
 import { Skeleton } from "~ui/skeleton";
 
 const requestFilterSchema = z.object({
-	status: z.enum(["all", "accepted", "declined"]).default("all").catch("all"),
+	status: z.enum(["all", "accepted", "rejected"]).default("all").catch("all"),
 	page: z.number().positive().default(1).catch(1),
 	pageSize: z.number().positive().default(10).catch(10),
 });
@@ -80,7 +80,7 @@ export const Route = createFileRoute("/_main/requests")({
 const filterOptions = [
 	{ value: "all", label: "All" },
 	{ value: "accepted", label: "Accepted" },
-	{ value: "declined", label: "Declined" },
+	{ value: "rejected", label: "Rejected" },
 ];
 
 function Requests() {
@@ -121,7 +121,7 @@ function Requests() {
 						navigate({
 							search: (prev) => ({
 								...prev,
-								status: selectedKey as "all" | "accepted" | "declined",
+								status: selectedKey as "all" | "accepted" | "rejected",
 							}),
 						});
 					}}
@@ -158,16 +158,18 @@ function Requests() {
 									? "You currently have no requests."
 									: search.status === "accepted"
 										? "You currently have no accepted requests."
-										: "You currently have no declined requests."}
+										: "You currently have no rejected requests."}
 							</div>
 						)}
 						items={requests ? requests.requests : []}
 					>
 						{(request) => (
 							<Table.Row id={request.id}>
-								<Table.Cell>{request.book_title}</Table.Cell>
-								<Table.Cell>{request.book_author}</Table.Cell>
-								<Table.Cell>{request.donor_name}</Table.Cell>
+								<Table.Cell className="capitalize">
+									{request.book?.title}
+								</Table.Cell>
+								<Table.Cell>{request.book?.author}</Table.Cell>
+								<Table.Cell>{request.donor?.name}</Table.Cell>
 								<Table.Cell>
 									<Badge
 										className="capitalize"
@@ -183,7 +185,7 @@ function Requests() {
 									</Badge>
 								</Table.Cell>
 								<Table.Cell>
-									{new Date(request.created_at).toLocaleDateString("en-US", {
+									{new Date(request.createdAt).toLocaleDateString("en-US", {
 										year: "numeric",
 										month: "short",
 										day: "numeric",

@@ -23,6 +23,7 @@ import { Modal } from "~ui/modal";
 import { SearchField } from "~ui/search-field";
 import { Select } from "~ui/select";
 import { useAuth } from "~lib/auth";
+import { EmptyState } from "~components/empty-state";
 
 export const Route = createFileRoute("/_public/books/")({
 	loader: ({ context }) => {
@@ -145,51 +146,80 @@ function Books() {
 					</Button>
 				</div>
 			</div>
-			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-				{bookFilters.map((book) => (
-					<Card
-						key={book.id}
-						className="overflow-hidden cursor-pointer"
-						onClick={() => setSelectedBookId(book.id)}
+			{bookFilters.length === 0 ? (
+				<div className="pt-4">
+					<EmptyState
+						icon={IconBookOpen}
+						title="No books available"
+						description={
+							<p className="sm:max-w-[500px]">
+								There are currently no books available for donation. Check back
+								later or add a book yourself!
+							</p>
+						}
 					>
-						<Card.Header withoutPadding className="py-3">
-							<img
-								src="https://placehold.co/400x200"
-								alt="Book cover placeholder"
-								className="w-full h-auto object-cover"
-							/>
-						</Card.Header>
-						<Card.Content className="px-4 pb-4">
-							<div>
-								<div className="flex items-center gap-x-2 justify-between">
-									<h2 className="text-base font-semibold select-none">
-										{book.title}
-									</h2>
-									<Badge
-										className="capitalize"
-										intent={getBadgeIntent(book.condition)}
-									>
-										{book.condition}
-									</Badge>
+						<Button
+							onPress={() => {
+								if (!userId) {
+									toast.error("You must be signed in to add a book.");
+									return;
+								}
+								navigate({ to: "/donations/new" });
+							}}
+							intent="primary"
+							size="small"
+						>
+							Add a Book
+						</Button>
+					</EmptyState>
+				</div>
+			) : (
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+					{bookFilters.map((book) => (
+						<Card
+							key={book.id}
+							className="overflow-hidden cursor-pointer"
+							onClick={() => setSelectedBookId(book.id)}
+						>
+							<Card.Header withoutPadding className="py-3">
+								<img
+									src="https://placehold.co/400x200"
+									alt="Book cover placeholder"
+									className="w-full h-auto object-cover"
+								/>
+							</Card.Header>
+							<Card.Content className="px-4 pb-4">
+								<div>
+									<div className="flex items-center gap-x-2 justify-between">
+										<h2 className="text-base font-semibold select-none">
+											{book.title}
+										</h2>
+										<Badge
+											className="capitalize"
+											intent={getBadgeIntent(book.condition)}
+										>
+											{book.condition}
+										</Badge>
+									</div>
+									<p className="text-sm text-muted-fg mb-2">{book.author}</p>
+									<p className="text-xs text-muted-fg">
+										<span className="font-medium text-fg">Listed on:</span>{" "}
+										{new Date(book.createdAt).toLocaleDateString("en-US", {
+											year: "numeric",
+											month: "short",
+											day: "numeric",
+										})}
+									</p>
+									<p className="text-xs text-muted-fg mt-1">
+										<span className="font-medium text-fg">Listed by:</span>{" "}
+										{book.donor?.name}
+									</p>
 								</div>
-								<p className="text-sm text-muted-fg mb-2">{book.author}</p>
-								<p className="text-xs text-muted-fg">
-									<span className="font-medium text-fg">Listed on:</span>{" "}
-									{new Date(book.createdAt).toLocaleDateString("en-US", {
-										year: "numeric",
-										month: "short",
-										day: "numeric",
-									})}
-								</p>
-								<p className="text-xs text-muted-fg mt-1">
-									<span className="font-medium text-fg">Listed by:</span>{" "}
-									{book.donor?.name}
-								</p>
-							</div>
-						</Card.Content>
-					</Card>
-				))}
-			</div>
+							</Card.Content>
+						</Card>
+					))}
+				</div>
+			)}
 			<Modal
 				isOpen={!!selectedBookId}
 				onOpenChange={(isOpen) => {

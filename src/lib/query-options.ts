@@ -160,17 +160,39 @@ export const userRequestsQueryOptions = (
 	userId: string,
 	page = 1,
 	pageSize = 10,
-	status: "accepted" | "declined" | "all" = "all",
+	status: "accepted" | "rejected" | "all" = "all",
 ) =>
 	queryOptions({
 		queryKey: ["user-requests", userId, page, pageSize, status],
 		queryFn: async () => {
-			const { data, error } = await supabase.rpc("get_user_requests", {
-				user_id: userId,
-				page: page,
-				page_size: pageSize,
-				request_status: status,
-			});
+			const startIndex = (page - 1) * pageSize;
+			const endIndex = startIndex + pageSize - 1;
+
+			let query = supabase
+				.from("donation_requests")
+				.select(
+					`
+					*,
+					book:books (
+						id,
+						title,
+						author
+					),
+					donor:users!donation_requests_donorId_fkey (
+						id,
+						name
+					)
+				`,
+					{ count: "exact" },
+				)
+				.eq("requesterId", userId)
+				.order("createdAt", { ascending: false });
+
+			if (status !== "all") {
+				query = query.eq("status", status.toUpperCase());
+			}
+
+			const { data, error, count } = await query.range(startIndex, endIndex);
 
 			if (error) {
 				console.error("Error fetching user's requests:", error);
@@ -178,11 +200,11 @@ export const userRequestsQueryOptions = (
 			}
 
 			return {
-				requests: data,
-				totalCount: data.length, // Assuming the RPC returns all matching records
+				requests: data ?? [],
+				totalCount: count ?? 0,
 				currentPage: page,
 				pageSize: pageSize,
-				totalPages: Math.ceil(data.length / pageSize),
+				totalPages: Math.ceil((count ?? 0) / pageSize),
 			};
 		},
 	});
@@ -281,14 +303,13 @@ export const bookFiltersQueryOptions = () =>
 	queryOptions({
 		queryKey: ["book-filters"],
 		queryFn: async () => {
-			// TODO: Update Database to include condition column and add conditions to the query
-			// TODO; Add filters to the query
 			const { data, error } = await supabase
 				.from("books")
 				.select(
 					`
 					*,
-					donor:users!books_ownerId_fkey(id, name)
+					donor:users!books_ownerId_fkey(id, name),
+					requests:donation_requests(id)
 				`,
 					{
 						count: "exact",
@@ -302,7 +323,10 @@ export const bookFiltersQueryOptions = () =>
 				throw new Error(error.message);
 			}
 
-			return data;
+			// Filter books with no requests
+			const filteredData = data?.filter((book) => book.requests.length === 0);
+
+			return filteredData;
 		},
 	});
 
