@@ -53,8 +53,7 @@ function getBadgeIntent(condition: string) {
 
 function Books() {
 	const { data: bookFilters } = useSuspenseQuery(bookFiltersQueryOptions());
-	const { user } = useAuth();
-	const userId = user?.id;
+	const { userId } = Route.useLoaderData();
 	const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
 
 	const {
@@ -63,27 +62,27 @@ function Books() {
 		error,
 	} = useQuery(bookByIdQueryOptions(selectedBookId ?? ""));
 
-	// const { mutate: requestBook, isPending: isRequesting } = useMutation({
-	// 	mutationFn: async () => {
-	// 		if (!selectedBookId || !userId) {
-	// 			throw new Error("Missing book ID or user ID");
-	// 		}
-	// 		const { data, error } = await supabase.rpc("request_book", {
-	// 			book_id: selectedBookId,
-	// 			donor_id: selectedBook?.donor?.id,
-	// 			requester_id: userId,
-	// 		});
-	// 		if (error) throw error;
-	// 		return data;
-	// 	},
-	// 	onSuccess: () => {
-	// 		toast.success("Book requested successfully");
-	// 		setSelectedBookId(null);
-	// 	},
-	// 	onError: (error) => {
-	// 		toast.error(`Failed to request book: ${error.message}`);
-	// 	},
-	// });
+	const { mutate: requestBook, isPending: isRequesting } = useMutation({
+		mutationFn: async () => {
+			if (!selectedBookId || !userId || !selectedBook?.donor?.id) {
+				throw new Error("Missing book ID or user ID");
+			}
+			const { data, error } = await supabase.rpc("request_book", {
+				book_id: selectedBookId,
+				donor_id: selectedBook.donor.id,
+				requester_id: userId,
+			});
+			if (error) throw error;
+			return data;
+		},
+		onSuccess: () => {
+			toast.success("Book requested successfully");
+			setSelectedBookId(null);
+		},
+		onError: (error) => {
+			toast.error(`Error: ${error.message}`);
+		},
+	});
 
 	const navigate = Route.useNavigate();
 	return (
@@ -258,12 +257,12 @@ function Books() {
 										toast.error("Please login to request a book");
 										return;
 									}
-									// requestBook();
+									requestBook();
 								}}
 								size="small"
-								// isDisabled={isRequesting}
+								isDisabled={isRequesting}
 							>
-								Request Book
+								{isRequesting ? "Requesting..." : "Request Book"}
 							</Button>
 						</Modal.Footer>
 					</Modal.Content>
