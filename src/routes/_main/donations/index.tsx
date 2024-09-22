@@ -330,14 +330,6 @@ function Donations() {
 													<IconCheck />
 													Mark as Donated
 												</Menu.Item>
-												<Menu.Item
-													isDisabled={book.isDonated}
-													className="text-xs"
-													isDanger={!book.isDonated}
-												>
-													<IconTrash />
-													Delete Book
-												</Menu.Item>
 											</Menu.Content>
 										</Menu>
 									</div>
@@ -384,7 +376,7 @@ function Donations() {
 						<Modal.Header>
 							<Modal.Title>Mark Book as Donated</Modal.Title>
 							<Modal.Description>
-								Please enter the username of the person who received this book.
+								Enter the recipient's username. This action is irreversible.
 							</Modal.Description>
 						</Modal.Header>
 						<form>

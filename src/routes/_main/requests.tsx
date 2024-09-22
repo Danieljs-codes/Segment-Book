@@ -150,7 +150,6 @@ function Requests() {
 						<Table.Column>Donor</Table.Column>
 						<Table.Column>Status</Table.Column>
 						<Table.Column>Requested At</Table.Column>
-						<Table.Column />
 					</Table.Header>
 					<Table.Body
 						renderEmptyState={() => (
@@ -189,32 +188,6 @@ function Requests() {
 										month: "short",
 										day: "numeric",
 									})}
-								</Table.Cell>
-								<Table.Cell>
-									<div className="flex justify-end">
-										<Menu>
-											<Menu.Trigger>
-												<IconDotsVertical />
-											</Menu.Trigger>
-											<Menu.Content
-												respectScreen={false}
-												placement="bottom end"
-											>
-												<Menu.Item className="text-xs">
-													<IconHighlight />
-													View Details
-												</Menu.Item>
-												<Menu.Item
-													isDisabled={request.status !== "PENDING"}
-													className="text-xs"
-													isDanger
-												>
-													<IconTrash />
-													Cancel Request
-												</Menu.Item>
-											</Menu.Content>
-										</Menu>
-									</div>
 								</Table.Cell>
 							</Table.Row>
 						)}

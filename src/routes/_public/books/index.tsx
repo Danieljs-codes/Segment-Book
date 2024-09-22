@@ -1,4 +1,4 @@
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
 	IconBookOpen,
@@ -14,6 +14,7 @@ import {
 	bookFiltersQueryOptions,
 	bookByIdQueryOptions,
 } from "~lib/query-options";
+import { supabase } from "~lib/supabase";
 import { Badge } from "~ui/badge";
 import { Button } from "~ui/button";
 import { Card } from "~ui/card";
@@ -21,6 +22,7 @@ import { Heading } from "~ui/heading";
 import { Modal } from "~ui/modal";
 import { SearchField } from "~ui/search-field";
 import { Select } from "~ui/select";
+import { useAuth } from "~lib/auth";
 
 export const Route = createFileRoute("/_public/books/")({
 	loader: ({ context }) => {
@@ -51,7 +53,8 @@ function getBadgeIntent(condition: string) {
 
 function Books() {
 	const { data: bookFilters } = useSuspenseQuery(bookFiltersQueryOptions());
-	const { userId } = Route.useLoaderData();
+	const { user } = useAuth();
+	const userId = user?.id;
 	const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
 
 	const {
@@ -59,6 +62,28 @@ function Books() {
 		isFetching,
 		error,
 	} = useQuery(bookByIdQueryOptions(selectedBookId ?? ""));
+
+	// const { mutate: requestBook, isPending: isRequesting } = useMutation({
+	// 	mutationFn: async () => {
+	// 		if (!selectedBookId || !userId) {
+	// 			throw new Error("Missing book ID or user ID");
+	// 		}
+	// 		const { data, error } = await supabase.rpc("request_book", {
+	// 			book_id: selectedBookId,
+	// 			donor_id: selectedBook?.donor?.id,
+	// 			requester_id: userId,
+	// 		});
+	// 		if (error) throw error;
+	// 		return data;
+	// 	},
+	// 	onSuccess: () => {
+	// 		toast.success("Book requested successfully");
+	// 		setSelectedBookId(null);
+	// 	},
+	// 	onError: (error) => {
+	// 		toast.error(`Failed to request book: ${error.message}`);
+	// 	},
+	// });
 
 	const navigate = Route.useNavigate();
 	return (
@@ -168,9 +193,11 @@ function Books() {
 			</div>
 			<Modal
 				isOpen={!!selectedBookId}
-				onOpenChange={(isOpen) => !isOpen && setSelectedBookId(null)}
+				onOpenChange={(isOpen) => {
+					if (!isOpen) setSelectedBookId(null);
+				}}
 			>
-				{!isFetching && !error && (
+				{!isFetching && !error && selectedBook && (
 					<Modal.Content isBlurred size="3xl">
 						<Modal.Header>
 							<Modal.Title>{selectedBook?.title}</Modal.Title>
@@ -231,10 +258,10 @@ function Books() {
 										toast.error("Please login to request a book");
 										return;
 									}
-
-									// TODO: Add request book mutation
+									// requestBook();
 								}}
 								size="small"
+								// isDisabled={isRequesting}
 							>
 								Request Book
 							</Button>

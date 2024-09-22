@@ -285,9 +285,15 @@ export const bookFiltersQueryOptions = () =>
 			// TODO; Add filters to the query
 			const { data, error } = await supabase
 				.from("books")
-				.select(`*,donor:users(id, name)				`, {
-					count: "exact",
-				})
+				.select(
+					`
+					*,
+					donor:users!books_ownerId_fkey(id, name)
+				`,
+					{
+						count: "exact",
+					},
+				)
 				.eq("isDonated", false)
 				.order("createdAt", { ascending: false });
 
@@ -315,7 +321,7 @@ export function bookByIdQueryOptions(bookId: string) {
 				.from("books")
 				.select(`
         *,
-        donor:users(id, name),
+        donor:users!books_ownerId_fkey(id, name),
         book_categories (
             category:categories(id, name)
         )

@@ -389,6 +389,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      request_book: {
+        Args: {
+          book_id: string
+          requester_id: string
+          donor_id: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       NotificationType: "DONATION_REQUEST"
