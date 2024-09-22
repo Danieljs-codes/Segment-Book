@@ -1,27 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-	IconBookOpen,
-	IconChevronLeft,
-	IconCloudDownload,
-	IconGlobe,
-} from "justd-icons";
-import {
-	FileTrigger,
-	isFileDropItem,
-	Button as ReactAriaButton,
-} from "react-aria-components";
+import { IconBookOpen, IconChevronLeft, IconGlobe } from "justd-icons";
 import { useListData } from "react-stately";
-import type { DropEvent } from "@react-types/shared";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, buttonStyles } from "~ui/button";
 import { Card } from "~ui/card";
-import { DropZone } from "~ui/drop-zone";
 import { Heading } from "~ui/heading";
 import { TextField } from "~ui/text-field";
 import { Select } from "~ui/select";
 import { TagField } from "~ui/tag-field";
-import { donationSchema } from "~/lib/schema";
+import { donationSchema, type DonationFormData } from "~/lib/schema";
 
 export const Route = createFileRoute("/_main/donations/new")({
 	loader: () => {
@@ -38,7 +26,8 @@ function NewDonation() {
 		control,
 		handleSubmit,
 		formState: { errors },
-	} = useForm({
+		setValue,
+	} = useForm<DonationFormData>({
 		resolver: zodResolver(donationSchema),
 		defaultValues: {
 			title: "",
@@ -46,6 +35,7 @@ function NewDonation() {
 			language: undefined,
 			condition: undefined,
 			tags: [],
+			image: undefined,
 		},
 	});
 
@@ -53,23 +43,14 @@ function NewDonation() {
 		initialItems: [],
 	});
 
-	const onSelectHandler = async (e: any) => {
-		if (e) {
-			const files = Array.from([...e]);
-			const item = files[0];
-			console.log(item);
-			// TODO: Handle image upload and validation
+	const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files && e.target.files.length > 0) {
+			const file = e.target.files[0];
+			setValue("image", file);
 		}
 	};
 
-	const onDropHandler = async (e: DropEvent) => {
-		const item = e.items
-			.filter(isFileDropItem)
-			.find((item) => item.type === "image/jpeg" || item.type === "image/png");
-		// TODO: Handle dropped image and validation
-	};
-
-	const onSubmit = (data: any) => {
+	const onSubmit = (data: DonationFormData) => {
 		console.log(data);
 		// TODO: Handle form submission
 	};
@@ -132,46 +113,41 @@ function NewDonation() {
 										/>
 									)}
 								/>
-								<DropZone
-									className="border-solid"
-									getDropOperation={(types) =>
-										types.has("image/jpeg") || types.has("image/png")
-											? "copy"
-											: "cancel"
-									}
-									onDrop={onDropHandler}
-								>
-									<div className="flex flex-col justify-center items-center">
-										<div
-											className={buttonStyles({
-												size: "square-petite",
-												intent: "secondary",
-												className: "mb-3",
-											})}
-										>
-											<IconCloudDownload />
-										</div>
-										<div className="flex items-center gap-x-1">
-											<FileTrigger
-												acceptedFileTypes={["image/png", "image/jpeg"]}
-												allowsMultiple={false}
-												onSelect={onSelectHandler}
+								<Controller
+									name="image"
+									control={control}
+									render={({ field: { onChange, value, ...field } }) => (
+										<div>
+											<label
+												htmlFor="image"
+												className="block text-sm font-medium text-gray-700"
 											>
-												<ReactAriaButton className="text-sm font-semibold text-primary focus:outline-none">
-													Click to upload
-												</ReactAriaButton>
-											</FileTrigger>
-											<span className="text-sm text-muted-fg">
-												or drag and drop
-											</span>
+												Image
+											</label>
+											<input
+												type="file"
+												id="image"
+												accept="image/*"
+												onChange={(e) => {
+													onFileChange(e);
+													onChange(e.target.files?.[0]);
+												}}
+												className="mt-1 block w-full text-sm text-gray-500
+													file:mr-4 file:py-2 file:px-4
+													file:rounded-full file:border-0
+													file:text-sm file:font-semibold
+													file:bg-violet-50 file:text-violet-700
+													hover:file:bg-violet-100"
+												{...field}
+											/>
+											{errors.image && (
+												<p className="mt-1 text-sm text-red-600">
+													{errors.image.message}
+												</p>
+											)}
 										</div>
-										<p className="text-xs text-muted-fg mt-1">
-											SVG, PNG, JPG or GIF (max. 800x400px)
-										</p>
-									</div>
-									<input type="hidden" name="image" />
-									{/* TODO: Add error message display for image upload */}
-								</DropZone>
+									)}
+								/>
 								<Controller
 									name="language"
 									control={control}
@@ -181,6 +157,10 @@ function NewDonation() {
 											placeholder="Select a language"
 											errorMessage={errors.language?.message}
 											isInvalid={!!errors.language}
+											selectedKey={field.value}
+											onSelectionChange={(key) => {
+												field.onChange(key);
+											}}
 											{...field}
 										>
 											<Select.Trigger prefix={<IconGlobe />} />
@@ -226,6 +206,10 @@ function NewDonation() {
 											placeholder="Select book condition"
 											errorMessage={errors.condition?.message}
 											isInvalid={!!errors.condition}
+											selectedKey={field.value}
+											onSelectionChange={(key) => {
+												field.onChange(key);
+											}}
 											{...field}
 										>
 											<Select.Trigger prefix={<IconBookOpen />} />
@@ -262,14 +246,36 @@ function NewDonation() {
 										</Select>
 									)}
 								/>
-								<TagField
-									className="text-sm"
-									max={3}
-									description="Add up to 3 tags to describe the book"
-									label="Add tag"
-									list={selectedItems}
-									descriptionClassName="text-xs"
+								<Controller
+									name="tags"
+									control={control}
+									render={({ field, fieldState: { error } }) => {
+										console.error("TagField error:", error);
+										return (
+											<TagField
+												className="text-sm"
+												max={3}
+												description="Add up to 3 tags to describe the book"
+												label="Add tag"
+												list={selectedItems}
+												descriptionClassName="text-xs"
+												onItemInserted={(item) => {
+													field.onChange([...field.value, item]);
+												}}
+												onItemCleared={(item) => {
+													field.onChange(
+														// @ts-ignore
+														field.value.filter((tag) => tag.id !== item.id),
+													);
+												}}
+												errorMessage={error?.message}
+												// @ts-ignore
+												isInvalid={!!error}
+											/>
+										);
+									}}
 								/>
+
 								<Button
 									type="submit"
 									intent="primary"

@@ -1,4 +1,5 @@
 import type * as React from "react";
+import { forwardRef } from "react";
 
 import type { Placement } from "@react-types/overlays";
 import { IconChevronLgDown } from "justd-icons";
@@ -40,26 +41,45 @@ interface SelectProps<T extends object> extends SelectPrimitiveProps<T> {
 	className?: string;
 }
 
-const Select = <T extends object>({
-	label,
-	description,
-	errorMessage,
-	children,
-	className,
-	...props
-}: SelectProps<T>) => {
-	return (
-		<SelectPrimitive
-			{...props}
-			className={ctr(className, "group flex w-full flex-col gap-1")}
-		>
-			{label && <Label>{label}</Label>}
-			<>{children}</>
-			{description && <Description>{description}</Description>}
-			<FieldError>{errorMessage}</FieldError>
-		</SelectPrimitive>
-	);
-};
+interface SelectComponent
+	extends React.ForwardRefExoticComponent<
+		SelectProps<any> & React.RefAttributes<HTMLDivElement>
+	> {
+	OptionDetails: typeof DropdownItemDetails;
+	Option: typeof DropdownItem;
+	Section: typeof DropdownSection;
+	Trigger: typeof Trigger;
+	List: typeof List;
+}
+
+const Select = forwardRef(
+	<T extends object>(
+		{
+			label,
+			description,
+			errorMessage,
+			children,
+			className,
+			...props
+		}: SelectProps<T>,
+		ref: React.Ref<HTMLDivElement>,
+	) => {
+		return (
+			<SelectPrimitive
+				{...props}
+				ref={ref}
+				className={ctr(className, "group flex w-full flex-col gap-1")}
+			>
+				{label && <Label>{label}</Label>}
+				<>{children}</>
+				{description && <Description>{description}</Description>}
+				<FieldError>{errorMessage}</FieldError>
+			</SelectPrimitive>
+		);
+	},
+) as SelectComponent;
+
+Select.displayName = "Select";
 
 interface ListProps<T extends object> {
 	items?: Iterable<T>;

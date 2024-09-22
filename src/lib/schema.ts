@@ -77,5 +77,8 @@ export const donationSchema = z.object({
 			{
 				message: "Only JPEG, PNG, and GIF images are allowed",
 			},
-		),
+		)
+		.optional(),
 });
+
+export type DonationFormData = z.infer<typeof donationSchema>;
