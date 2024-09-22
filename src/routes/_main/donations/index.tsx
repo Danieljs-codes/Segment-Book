@@ -273,7 +273,7 @@ function Donations() {
 					>
 						{(book) => (
 							<Table.Row id={book.id}>
-								<Table.Cell>{book.title}</Table.Cell>
+								<Table.Cell className="capitalize">{book.title}</Table.Cell>
 								<Table.Cell>{book.author}</Table.Cell>
 								<Table.Cell>
 									{book.description && book.description.length > 50
