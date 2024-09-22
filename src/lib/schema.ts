@@ -48,7 +48,7 @@ export const donationSchema = z.object({
 	language: z.enum(["english", "spanish", "french", "german", "other"], {
 		errorMap: () => ({ message: "Please select a valid language" }),
 	}),
-	condition: z.enum(["new", "likeNew", "good", "fair", "poor"], {
+	condition: z.enum(["like new", "excellent", "good", "fair", "acceptable"], {
 		errorMap: () => ({ message: "Please select a valid condition" }),
 	}),
 	tags: z
@@ -58,8 +58,9 @@ export const donationSchema = z.object({
 				.min(2, { message: "Each tag must be at least 2 characters long" })
 				.max(20, { message: "Each tag must not exceed 20 characters" })
 				.trim()
-				.refine((value) => /^[a-zA-Z0-9-]+$/.test(value), {
-					message: "Tags can only contain letters, numbers, and hyphens",
+				.refine((value) => /^[a-zA-Z0-9-\s]+$/.test(value), {
+					message:
+						"Tags can only contain letters, numbers, hyphens, and spaces",
 				}),
 		)
 		.min(1, { message: "At least one tag is required" })
@@ -68,7 +69,7 @@ export const donationSchema = z.object({
 			message: "All tags must be unique",
 		}),
 	image: z
-		.instanceof(File)
+		.instanceof(File, { message: "Image is required" })
 		.refine((file) => file.size <= 5 * 1024 * 1024, {
 			message: "Image must be no larger than 5MB",
 		})
@@ -77,8 +78,7 @@ export const donationSchema = z.object({
 			{
 				message: "Only JPEG, PNG, and GIF images are allowed",
 			},
-		)
-		.optional(),
+		),
 });
 
 export type DonationFormData = z.infer<typeof donationSchema>;

@@ -196,7 +196,11 @@ function Donations() {
 							<Table.Row id={book.id}>
 								<Table.Cell>{book.title}</Table.Cell>
 								<Table.Cell>{book.author}</Table.Cell>
-								<Table.Cell>{book.description}</Table.Cell>
+								<Table.Cell>
+									{book.description && book.description.length > 50
+										? `${book.description.slice(0, 50)}...`
+										: book.description || "No description available"}
+								</Table.Cell>
 								<Table.Cell>
 									<Badge intent={book.isDonated ? "success" : "primary"}>
 										{book.isDonated ? "Donated" : "Not Donated"}
@@ -216,6 +220,7 @@ function Donations() {
 												<IconDotsVertical />
 											</Menu.Trigger>
 											<Menu.Content
+												className="min-w-[180px]"
 												respectScreen={false}
 												placement="bottom end"
 											>

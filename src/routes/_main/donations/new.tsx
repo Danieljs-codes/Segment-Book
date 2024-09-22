@@ -10,10 +10,18 @@ import { TextField } from "~ui/text-field";
 import { Select } from "~ui/select";
 import { TagField } from "~ui/tag-field";
 import { donationSchema, type DonationFormData } from "~/lib/schema";
+import { Textarea } from "~ui/textarea";
+import { useMutation } from "@tanstack/react-query";
+import { supabase } from "~lib/supabase";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_main/donations/new")({
-	loader: () => {
+	loader: ({ context }) => {
 		return {
+			userId: context.session.user.id,
 			crumb: "New Donation",
 			title: "New Donation",
 		};
@@ -22,11 +30,16 @@ export const Route = createFileRoute("/_main/donations/new")({
 });
 
 function NewDonation() {
+	const queryClient = useQueryClient();
+	const { userId } = Route.useLoaderData();
+	const navigate = useNavigate();
+
 	const {
 		control,
 		handleSubmit,
 		formState: { errors },
 		setValue,
+		register, // Add this
 	} = useForm<DonationFormData>({
 		resolver: zodResolver(donationSchema),
 		defaultValues: {
@@ -36,6 +49,46 @@ function NewDonation() {
 			condition: undefined,
 			tags: [],
 			image: undefined,
+		},
+	});
+
+	const { mutateAsync: createDonation } = useMutation({
+		mutationKey: ["createDonation"],
+		mutationFn: async (input: DonationFormData & { userId: string }) => {
+			const { data, error } = await supabase.rpc("create_book", {
+				book_data: {
+					title: input.title,
+					author: "John Doe",
+					ownerId: userId,
+					description: input.description,
+					language: input.language,
+					condition: input.condition,
+					tags: input.tags,
+				},
+			});
+
+			if (error) {
+				throw error;
+			}
+
+			return data;
+		},
+
+		onSuccess: (data) => {
+			// Invalidate relevant queries
+			queryClient.invalidateQueries({ queryKey: ["user-donated-books"] });
+			queryClient.invalidateQueries({ queryKey: ["total-donations"] });
+			queryClient.invalidateQueries({ queryKey: ["listed-not-donated-books"] });
+			queryClient.invalidateQueries({ queryKey: ["book-filters"] });
+
+			navigate({
+				to: "/donations",
+				search: {
+					status: "all",
+					page: 1,
+					pageSize: 10,
+				},
+			});
 		},
 	});
 
@@ -51,9 +104,20 @@ function NewDonation() {
 	};
 
 	const onSubmit = (data: DonationFormData) => {
-		console.log(data);
-		// TODO: Handle form submission
+		console.log(data, userId);
+		toast.promise(createDonation({ ...data, userId: userId }), {
+			loading: "Creating donation...",
+			success: "Donation created successfully!",
+			error: "Failed to create donation. Please try again.",
+		});
 	};
+
+	// Add this useEffect hook
+	useEffect(() => {
+		if (Object.keys(errors).length > 0) {
+			console.log("Validation errors:", errors);
+		}
+	}, [errors]);
 
 	return (
 		<div>
@@ -104,11 +168,13 @@ function NewDonation() {
 									name="description"
 									control={control}
 									render={({ field }) => (
-										<TextField
+										<Textarea
 											label="Description"
 											placeholder="Book description"
 											errorMessage={errors.description?.message}
 											isInvalid={!!errors.description}
+											rows={4}
+											className="text-sm"
 											{...field}
 										/>
 									)}
@@ -116,18 +182,22 @@ function NewDonation() {
 								<Controller
 									name="image"
 									control={control}
+									rules={{ required: "Image is required" }} // Add this line
 									render={({ field: { onChange, value, ...field } }) => (
 										<div>
 											<label
 												htmlFor="image"
-												className="block text-sm font-medium text-gray-700"
+												className="block text-sm font-medium text-fg"
 											>
-												Image
+												Image <span className="text-red-500">*</span>
 											</label>
 											<input
 												type="file"
 												id="image"
 												accept="image/*"
+												{...register("image", {
+													required: "Image is required",
+												})} // Add this line
 												onChange={(e) => {
 													onFileChange(e);
 													onChange(e.target.files?.[0]);
@@ -136,9 +206,10 @@ function NewDonation() {
 													file:mr-4 file:py-2 file:px-4
 													file:rounded-full file:border-0
 													file:text-sm file:font-semibold
-													file:bg-violet-50 file:text-violet-700
-													hover:file:bg-violet-100"
+													file:bg-muted file:text-muted-fg
+													hover:file:bg-muted-fg hover:file:text-muted"
 												{...field}
+												required
 											/>
 											{errors.image && (
 												<p className="mt-1 text-sm text-red-600">
@@ -216,24 +287,24 @@ function NewDonation() {
 											<Select.List
 												items={[
 													{
-														id: "new",
-														label: "New",
-													},
-													{
-														id: "likeNew",
+														id: "like new",
 														label: "Like New",
 													},
 													{
-														id: "good",
-														label: "Good",
+														id: "excellent",
+														label: "Excellent",
 													},
 													{
 														id: "fair",
 														label: "Fair",
 													},
 													{
-														id: "poor",
-														label: "Poor",
+														id: "good",
+														label: "Good",
+													},
+													{
+														id: "acceptable",
+														label: "Acceptable",
 													},
 												]}
 											>
@@ -249,33 +320,26 @@ function NewDonation() {
 								<Controller
 									name="tags"
 									control={control}
-									render={({ field, fieldState: { error } }) => {
-										console.error("TagField error:", error);
-										return (
-											<TagField
-												className="text-sm"
-												max={3}
-												description="Add up to 3 tags to describe the book"
-												label="Add tag"
-												list={selectedItems}
-												descriptionClassName="text-xs"
-												onItemInserted={(item) => {
-													field.onChange([...field.value, item]);
-												}}
-												onItemCleared={(item) => {
-													field.onChange(
-														// @ts-ignore
-														field.value.filter((tag) => tag.id !== item.id),
-													);
-												}}
-												errorMessage={error?.message}
-												// @ts-ignore
-												isInvalid={!!error}
-											/>
-										);
-									}}
+									render={({ field, fieldState: { error } }) => (
+										<TagField
+											className="text-sm"
+											max={3}
+											description="Add up to 3 tags to describe the book"
+											label="Add tag"
+											list={selectedItems}
+											descriptionClassName="text-xs"
+											onItemInserted={(item) => {
+												field.onChange([...field.value, item.name]);
+											}}
+											onItemCleared={(item) => {
+												field.onChange(
+													field.value.filter((tag) => tag !== item.name),
+												);
+											}}
+											errorMessage={error?.message}
+										/>
+									)}
 								/>
-
 								<Button
 									type="submit"
 									intent="primary"

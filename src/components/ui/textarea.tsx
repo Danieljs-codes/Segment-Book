@@ -28,35 +28,43 @@ interface TextareaProps extends TextFieldPrimitiveProps {
 	className?: string;
 }
 
-const Textarea = ({
-	className,
-	placeholder,
-	label,
-	description,
-	errorMessage,
-	rows,
-	...props
-}: TextareaProps) => {
-	return (
-		<TextFieldPrimitive
-			{...props}
-			className={ctr(className, "group flex flex-col gap-1")}
-		>
-			{label && <Label>{label}</Label>}
-			<TextAreaPrimitive
-				rows={rows}
-				placeholder={placeholder}
-				className={cr(className, (className, renderProps) =>
-					textareaStyles({
-						...renderProps,
-						className,
-					}),
-				)}
-			/>
-			{description && <Description>{description}</Description>}
-			<FieldError>{errorMessage}</FieldError>
-		</TextFieldPrimitive>
-	);
-};
+const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+	(
+		{
+			className,
+			placeholder,
+			label,
+			description,
+			errorMessage,
+			rows,
+			...props
+		},
+		ref,
+	) => {
+		return (
+			<TextFieldPrimitive
+				{...props}
+				className={ctr(className, "group flex flex-col gap-1")}
+			>
+				{label && <Label>{label}</Label>}
+				<TextAreaPrimitive
+					ref={ref}
+					rows={rows}
+					placeholder={placeholder}
+					className={cr(className, (className, renderProps) =>
+						textareaStyles({
+							...renderProps,
+							className,
+						}),
+					)}
+				/>
+				{description && <Description>{description}</Description>}
+				<FieldError>{errorMessage}</FieldError>
+			</TextFieldPrimitive>
+		);
+	},
+);
+
+Textarea.displayName = "Textarea";
 
 export { Textarea, type TextareaProps };

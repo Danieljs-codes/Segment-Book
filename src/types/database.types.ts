@@ -289,6 +289,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_book: {
+        Args: {
+          book_data: Json
+        }
+        Returns: string
+      }
       get_active_requests_received: {
         Args: {
           user_id: string
