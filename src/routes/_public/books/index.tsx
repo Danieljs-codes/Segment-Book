@@ -43,7 +43,7 @@ function getBadgeIntent(condition: string) {
 		case "fair":
 			return "warning";
 		case "acceptable":
-			return "danger";
+			return "secondary";
 		default:
 			return "primary";
 	}
