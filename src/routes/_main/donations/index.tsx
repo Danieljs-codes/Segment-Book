@@ -1,4 +1,9 @@
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import {
+	useMutation,
+	useQuery,
+	useQueryClient,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	IconCheck,
@@ -21,6 +26,9 @@ import { Table } from "~ui/table";
 import { Skeleton } from "~ui/skeleton";
 import { useMediaQuery } from "~ui/primitive";
 import { Modal } from "~ui/modal";
+import { TextField } from "~ui/text-field";
+import { supabase } from "~lib/supabase";
+import { toast } from "sonner";
 
 const donationFilterSchema = z.object({
 	status: z.enum(["donated", "notDonated", "all"]).default("all").catch("all"),
@@ -81,6 +89,7 @@ export const Route = createFileRoute("/_main/donations/")({
 				pageSize,
 				status,
 			},
+			username: context.session.user.user_metadata.username as string,
 		};
 	},
 	component: Donations,
@@ -93,7 +102,8 @@ const filterOptions = [
 ];
 
 function Donations() {
-	const [isOpen, setIsOpen] = useState(false);
+	const queryClient = useQueryClient();
+	const [recipientUsername, setRecipientUsername] = useState("");
 	const isMobile = useMediaQuery("(max-width: 600px)");
 	const { search } = Route.useLoaderData();
 	const navigate = Route.useNavigate();
@@ -102,6 +112,7 @@ function Donations() {
 			user: { id },
 		},
 	} = Route.useRouteContext();
+	const { username } = Route.useLoaderData();
 	const {
 		data: books,
 		isLoading,
@@ -114,6 +125,37 @@ function Donations() {
 			search.status,
 		),
 	);
+
+	const [selectedBook, setSelectedBook] = useState<{
+		id: string;
+		title: string;
+	} | null>(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const { mutateAsync: markAsDonated, isPending } = useMutation({
+		mutationKey: ["markAsDonated"],
+		mutationFn: async ({
+			bookId,
+			recipientUsername,
+		}: { bookId: string; recipientUsername: string }) => {
+			const { data, error } = await supabase.rpc("mark_book_as_donated", {
+				book_id: bookId,
+				recipient_username: recipientUsername,
+				donor_username: username,
+			});
+
+			if (error) {
+				throw error;
+			}
+
+			return {};
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["user-donated-books"] });
+			queryClient.invalidateQueries({ queryKey: ["total-donations"] });
+			queryClient.invalidateQueries({ queryKey: ["listed-not-donated-books"] });
+			queryClient.invalidateQueries({ queryKey: ["book-filters"] });
+		},
+	});
 
 	if (isLoading) return <DonationsPending />;
 
@@ -228,7 +270,13 @@ function Donations() {
 													<IconHighlight />
 													Edit Book Details
 												</Menu.Item>
-												<Menu.Item className="text-xs">
+												<Menu.Item
+													className="text-xs"
+													onAction={() => {
+														setSelectedBook({ id: book.id, title: book.title });
+														setIsModalOpen(true);
+													}}
+												>
 													<IconCheck />
 													Mark as Donated
 												</Menu.Item>
@@ -280,6 +328,64 @@ function Donations() {
 					<IconChevronRight />
 				</Button>
 			</div>
+			<Modal>
+				{selectedBook && (
+					<Modal.Content isOpen={isModalOpen} onOpenChange={setIsModalOpen}>
+						<Modal.Header>
+							<Modal.Title>Mark Book as Donated</Modal.Title>
+							<Modal.Description>
+								Please enter the username of the person who received this book.
+							</Modal.Description>
+						</Modal.Header>
+						<form>
+							<div className="space-y-4">
+								<TextField
+									label="Book Title"
+									value={selectedBook?.title || ""}
+									isReadOnly
+								/>
+								<TextField
+									label="Recipient's Username"
+									placeholder="@stephen_curry"
+									description="So we can send them a notification"
+									descriptionClassName="text-sm text-muted-fg"
+									value={recipientUsername}
+									onChange={(value) => setRecipientUsername(value)}
+								/>
+							</div>
+							<Modal.Footer className="flex justify-end gap-2 mt-2 flex-col">
+								<Modal.Close
+									intent="secondary"
+									size="small"
+									onPress={() => setIsModalOpen(false)}
+								>
+									Cancel
+								</Modal.Close>
+								<Button
+									onPress={() => {
+										if (!selectedBook?.id || !recipientUsername) return;
+										toast.promise(
+											markAsDonated({
+												bookId: selectedBook.id,
+												recipientUsername,
+											}),
+											{
+												loading: "Marking as donated...",
+												success: "Book marked as donated!",
+												error: (error) => error.message,
+											},
+										);
+										setIsModalOpen(false);
+									}}
+									size="small"
+								>
+									{isPending ? "Confirming..." : "Confirm Donation"}
+								</Button>
+							</Modal.Footer>
+						</form>
+					</Modal.Content>
+				)}
+			</Modal>
 		</div>
 	);
 }

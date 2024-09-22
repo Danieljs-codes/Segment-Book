@@ -268,6 +268,7 @@ export const chatMessagesQueryOptions = (chatId: string, userId: string) => ({
 			.from("users")
 			.select("id, name, email")
 			.neq("id", userId)
+			.limit(1)
 			.single();
 
 		if (userError) throw userError;
@@ -342,7 +343,7 @@ export const allDonorsQueryOptions = () =>
 				.from("users")
 				.select(`
 					*,
-					donated_books:books(count)
+					donated_books:books!books_ownerId_fkey(count)
 				`)
 				.eq("books.isDonated", true);
 

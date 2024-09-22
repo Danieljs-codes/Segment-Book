@@ -38,6 +38,7 @@ function SignUpComponent() {
 				options: {
 					data: {
 						full_name: data.fullName,
+						username: fullNameToKebabCase(data.fullName),
 					},
 				},
 			});

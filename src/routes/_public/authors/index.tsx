@@ -44,7 +44,8 @@ function Authors() {
 							<div className="flex items-center gap-2">
 								<IconBookOpen />
 								<p className="text-sm font-medium">
-									{donor.donated_books} books donated
+									{donor.donated_books}{" "}
+									{donor.donated_books === 1 ? "book" : "books"} donated
 								</p>
 							</div>
 							<Badge

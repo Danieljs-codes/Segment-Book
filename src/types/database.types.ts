@@ -45,6 +45,7 @@ export type Database = {
           condition: string
           createdAt: string
           description: string | null
+          donatedToId: string | null
           id: string
           isDonated: boolean
           language: string
@@ -56,6 +57,7 @@ export type Database = {
           condition: string
           createdAt?: string
           description?: string | null
+          donatedToId?: string | null
           id?: string
           isDonated?: boolean
           language: string
@@ -67,6 +69,7 @@ export type Database = {
           condition?: string
           createdAt?: string
           description?: string | null
+          donatedToId?: string | null
           id?: string
           isDonated?: boolean
           language?: string
@@ -74,6 +77,13 @@ export type Database = {
           title?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "books_donatedtoid_fkey"
+            columns: ["donatedToId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "books_ownerId_fkey"
             columns: ["ownerId"]
@@ -267,6 +277,7 @@ export type Database = {
           email: string
           id: string
           name: string
+          username: string
         }
         Insert: {
           authUserId: string
@@ -274,6 +285,7 @@ export type Database = {
           email: string
           id?: string
           name: string
+          username: string
         }
         Update: {
           authUserId?: string
@@ -281,6 +293,7 @@ export type Database = {
           email?: string
           id?: string
           name?: string
+          username?: string
         }
         Relationships: []
       }
@@ -361,6 +374,14 @@ export type Database = {
           donor_name: string
           total_count: number
         }[]
+      }
+      mark_book_as_donated: {
+        Args: {
+          book_id: string
+          donor_username: string
+          recipient_username: string
+        }
+        Returns: undefined
       }
     }
     Enums: {

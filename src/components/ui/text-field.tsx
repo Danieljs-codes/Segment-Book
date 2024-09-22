@@ -16,7 +16,7 @@ import {
 	Input,
 	Label,
 } from "./field";
-import { ctr } from "./primitive";
+import { cn, ctr } from "./primitive";
 
 interface TextFieldProps extends TextFieldPrimitiveProps, FieldProps {
 	prefix?: React.ReactNode;
@@ -24,6 +24,7 @@ interface TextFieldProps extends TextFieldPrimitiveProps, FieldProps {
 	isLoading?: boolean;
 	indicatorPlace?: "prefix" | "suffix";
 	className?: string;
+	descriptionClassName?: string;
 }
 
 const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
@@ -38,6 +39,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
 			isLoading,
 			indicatorPlace,
 			className,
+			descriptionClassName,
 			...props
 		},
 		ref,
@@ -64,7 +66,11 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
 						<span className="atrs isSfx x2e2">{suffix}</span>
 					) : null}
 				</FieldGroup>
-				{description && <Description>{description}</Description>}
+				{description && (
+					<Description className={cn(descriptionClassName)}>
+						{description}
+					</Description>
+				)}
 				<FieldError>{errorMessage}</FieldError>
 			</TextFieldPrimitive>
 		);

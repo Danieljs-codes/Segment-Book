@@ -178,11 +178,11 @@ function Books() {
 						</Modal.Header>
 						<Modal.Body>
 							<div className="flex flex-col md:flex-row gap-4">
-								<div className="rounded-lg overflow-hidden">
+								<div className="rounded-lg overflow-hidden flex-1">
 									<img src="https://placehold.co/400x200" alt="Book cover" />
 								</div>
-								<div>
-									<h3 className="text-muted-fg text-sm">
+								<div className="flex-1">
+									<h3 className="text-muted-fg text-sm ">
 										{selectedBook?.description}
 									</h3>
 									<div className="grid grid-cols-2 gap-2 mt-4">
@@ -190,11 +190,11 @@ function Books() {
 											<IconBookOpen />
 											{selectedBook?.condition}
 										</Badge>
-										<Badge shape="circle" className="w-fit">
+										<Badge shape="circle" className="w-fit capitalize">
 											<IconGlobe />
 											{selectedBook?.language}
 										</Badge>
-										<Badge shape="circle" className="w-fit">
+										<Badge shape="circle" className="w-fit capitalize">
 											<IconCalendar />
 											{selectedBook?.createdAt &&
 												new Date(selectedBook.createdAt).toLocaleDateString(
@@ -202,7 +202,7 @@ function Books() {
 													{ year: "numeric", month: "short", day: "numeric" },
 												)}
 										</Badge>
-										<Badge shape="circle" className="w-fit">
+										<Badge shape="circle" className="w-fit capitalize">
 											<IconContacts />
 											{selectedBook?.donor?.name}
 										</Badge>
@@ -213,7 +213,7 @@ function Books() {
 											{selectedBook?.book_categories.map((bookCategory) => (
 												<Badge
 													key={bookCategory.category?.id}
-													className="w-fit"
+													className="w-fit capitalize"
 												>
 													<IconPriceTag />
 													{bookCategory.category?.name}
