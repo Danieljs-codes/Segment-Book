@@ -205,7 +205,7 @@ function OverviewComponent() {
 					className="px-0 pt-0 space-y-0.5"
 					title="Books Available for Donation"
 					titleClassName="text-base md:text-lg"
-					description="Your recently listed books but haven't been donated yet"
+					description="Your recently listed books but haven't donated yet"
 					descriptionClassName="text-sm"
 				/>
 				<Card>

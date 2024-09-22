@@ -51,6 +51,7 @@ export type Database = {
           language: string
           ownerId: string
           title: string
+          updatedAt: string
         }
         Insert: {
           author: string
@@ -63,6 +64,7 @@ export type Database = {
           language: string
           ownerId: string
           title: string
+          updatedAt?: string
         }
         Update: {
           author?: string
@@ -75,6 +77,7 @@ export type Database = {
           language?: string
           ownerId?: string
           title?: string
+          updatedAt?: string
         }
         Relationships: [
           {
@@ -234,6 +237,7 @@ export type Database = {
           receiverId: string
           senderId: string
           title: string
+          updatedAt: string
         }
         Insert: {
           content: string
@@ -243,6 +247,7 @@ export type Database = {
           receiverId: string
           senderId: string
           title: string
+          updatedAt?: string
         }
         Update: {
           content?: string
@@ -252,6 +257,7 @@ export type Database = {
           receiverId?: string
           senderId?: string
           title?: string
+          updatedAt?: string
         }
         Relationships: [
           {

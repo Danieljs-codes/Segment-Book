@@ -196,7 +196,12 @@ function Notifications() {
 										}
 									/>
 									<div className="flex-1">
-										<p className="text-sm font-medium">{notification.title}</p>
+										<p className="text-sm">
+											{notification.title.replace(
+												/^(.*)"(.+)"(.*)(@\w+)(.*)$/,
+												'$1"<span class="font-medium">$2</span>"$3<span class="font-bold">$4</span>$5',
+											)}
+										</p>
 										<p className="text-xs md:text-sm text-muted-fg mt-1">
 											{notification.content}
 										</p>

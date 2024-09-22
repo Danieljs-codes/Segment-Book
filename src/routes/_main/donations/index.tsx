@@ -157,6 +157,43 @@ function Donations() {
 		},
 	});
 
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+	const [editingBook, setEditingBook] = useState<{
+		id: string;
+		title: string;
+		author: string;
+		description: string;
+	} | null>(null);
+
+	const { mutateAsync: updateBook, isPending: isUpdating } = useMutation({
+		mutationKey: ["updateBook"],
+		mutationFn: async ({
+			bookId,
+			title,
+			author,
+			description,
+		}: {
+			bookId: string;
+			title: string;
+			author: string;
+			description: string;
+		}) => {
+			const { data, error } = await supabase
+				.from("books")
+				.update({ title, author, description })
+				.eq("id", bookId);
+
+			if (error) {
+				throw error;
+			}
+
+			return data;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["user-donated-books"] });
+		},
+	});
+
 	if (isLoading) return <DonationsPending />;
 
 	if (error) return <div>Error: {error.message}</div>;
@@ -266,12 +303,25 @@ function Donations() {
 												respectScreen={false}
 												placement="bottom end"
 											>
-												<Menu.Item className="text-xs">
+												<Menu.Item
+													className="text-xs"
+													isDisabled={book.isDonated}
+													onAction={() => {
+														setEditingBook({
+															id: book.id,
+															title: book.title,
+															author: book.author,
+															description: book.description || "",
+														});
+														setIsEditModalOpen(true);
+													}}
+												>
 													<IconHighlight />
 													Edit Book Details
 												</Menu.Item>
 												<Menu.Item
 													className="text-xs"
+													isDisabled={book.isDonated}
 													onAction={() => {
 														setSelectedBook({ id: book.id, title: book.title });
 														setIsModalOpen(true);
@@ -283,7 +333,7 @@ function Donations() {
 												<Menu.Item
 													isDisabled={book.isDonated}
 													className="text-xs"
-													isDanger
+													isDanger={!book.isDonated}
 												>
 													<IconTrash />
 													Delete Book
@@ -367,7 +417,9 @@ function Donations() {
 										toast.promise(
 											markAsDonated({
 												bookId: selectedBook.id,
-												recipientUsername,
+												recipientUsername: recipientUsername
+													.trim()
+													.toLowerCase(),
 											}),
 											{
 												loading: "Marking as donated...",
@@ -380,6 +432,79 @@ function Donations() {
 									size="small"
 								>
 									{isPending ? "Confirming..." : "Confirm Donation"}
+								</Button>
+							</Modal.Footer>
+						</form>
+					</Modal.Content>
+				)}
+			</Modal>
+
+			{/* Edit Book Modal */}
+			<Modal>
+				{editingBook && (
+					<Modal.Content
+						isOpen={isEditModalOpen}
+						onOpenChange={setIsEditModalOpen}
+					>
+						<Modal.Header>
+							<Modal.Title>Edit Book Details</Modal.Title>
+							<Modal.Description>
+								Update the details of your book listing.
+							</Modal.Description>
+						</Modal.Header>
+						<form onSubmit={(e) => e.preventDefault()}>
+							<div className="space-y-4">
+								<TextField
+									label="Book Title"
+									value={editingBook.title}
+									onChange={(value) =>
+										setEditingBook({ ...editingBook, title: value })
+									}
+								/>
+								<TextField
+									label="Author"
+									value={editingBook.author}
+									onChange={(value) =>
+										setEditingBook({ ...editingBook, author: value })
+									}
+								/>
+								<TextField
+									label="Description"
+									value={editingBook.description}
+									onChange={(value) =>
+										setEditingBook({ ...editingBook, description: value })
+									}
+								/>
+							</div>
+							<Modal.Footer className="flex justify-end gap-2 mt-2 flex-col">
+								<Modal.Close
+									intent="secondary"
+									size="small"
+									onPress={() => setIsEditModalOpen(false)}
+								>
+									Cancel
+								</Modal.Close>
+								<Button
+									onPress={() => {
+										if (!editingBook) return;
+										toast.promise(
+											updateBook({
+												bookId: editingBook.id,
+												title: editingBook.title,
+												author: editingBook.author,
+												description: editingBook.description,
+											}),
+											{
+												loading: "Updating book details...",
+												success: "Book details updated successfully!",
+												error: (error) => error.message,
+											},
+										);
+										setIsEditModalOpen(false);
+									}}
+									size="small"
+								>
+									Update Book
 								</Button>
 							</Modal.Footer>
 						</form>
