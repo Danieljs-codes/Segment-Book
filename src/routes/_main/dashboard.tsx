@@ -292,7 +292,13 @@ function OverviewComponent() {
 									<Table.Cell>{request.book_author}</Table.Cell>
 									<Table.Cell>{request.requester_name}</Table.Cell>
 									<Table.Cell>
-										{new Date(request.request_date).toLocaleDateString()}
+										{new Date(request.request_date).toLocaleString("en-US", {
+											year: "numeric",
+											month: "short",
+											day: "numeric",
+											hour: "2-digit",
+											minute: "2-digit",
+										})}
 									</Table.Cell>
 								</Table.Row>
 							)}
