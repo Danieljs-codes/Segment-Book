@@ -10,7 +10,6 @@ export interface AuthContextType {
 	signIn: (email: string, password: string) => Promise<void>;
 	signOut: () => Promise<void>;
 	updateSession: (session: Session | null) => void;
-	// Add other auth methods as needed
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

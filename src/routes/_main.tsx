@@ -26,6 +26,8 @@ import { Button } from "~ui/button";
 import { Menu } from "~ui/menu";
 import { useTheme } from "~components/theme-provider";
 import { supabase } from "~lib/supabase";
+import { useMutation } from "@tanstack/react-query";
+import { flushSync } from "react-dom";
 
 const routes = [
 	{
@@ -97,11 +99,33 @@ export const Route = createFileRoute("/_main")({
 });
 
 function MainLayout() {
-	const { isLoading } = useAuth();
+	const { isLoading, signOut, updateSession } = useAuth();
+	const navigate = Route.useNavigate();
 	const { setTheme, theme } = useTheme();
 	const { pathname } = useLocation();
 	const { session, user } = Route.useRouteContext();
 	const matches = useMatches();
+
+	const { mutateAsync: signOutUser } = useMutation({
+		mutationKey: ["signOut"],
+		mutationFn: async () => {
+			await signOut();
+		},
+		onSuccess: () => {
+			flushSync(() => {
+				updateSession(null);
+			});
+			navigate({ to: "/sign-in" });
+		},
+	});
+
+	const handleSignOut = () => {
+		toast.promise(signOutUser(), {
+			loading: "Signing out...",
+			success: "Signed out successfully!",
+			error: "Failed to sign out",
+		});
+	};
 
 	if (matches.some((match) => match.status === "pending")) return null;
 
@@ -136,11 +160,7 @@ function MainLayout() {
 					</Button>
 					<Menu>
 						<Menu.Trigger>
-							<Avatar
-								shape="circle"
-								src={user.avatar}
-								size="medium"
-							/>
+							<Avatar shape="circle" src={user.avatar} size="medium" />
 						</Menu.Trigger>
 						<Menu.Content>
 							<Menu.Item href="/" className="text-sm">
@@ -155,7 +175,7 @@ function MainLayout() {
 								<IconSettings />
 								Settings
 							</Menu.Item>
-							<Menu.Item className="text-sm">
+							<Menu.Item onAction={handleSignOut} className="text-sm">
 								<IconLogout />
 								Sign out
 							</Menu.Item>
@@ -201,7 +221,12 @@ function MainLayout() {
 									size="extra-small"
 									shape="square"
 									className="-ml-1.5"
-									initials={user.name.split(" ").map(word => word[0]).join("") || ""}
+									initials={
+										user.name
+											.split(" ")
+											.map((word) => word[0])
+											.join("") || ""
+									}
 									src={user.avatar}
 								/>
 								{session.user.user_metadata?.full_name
@@ -235,7 +260,7 @@ function MainLayout() {
 									{theme === "light" ? <IconMoon /> : <IconSun />}
 									Toggle Theme
 								</Menu.Item>
-								<Menu.Item>
+								<Menu.Item onAction={handleSignOut}>
 									<IconLogout />
 									Sign out
 								</Menu.Item>

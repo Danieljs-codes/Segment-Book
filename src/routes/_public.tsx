@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import {
 	IconBell,
@@ -10,7 +11,10 @@ import {
 	IconSettings,
 } from "justd-icons";
 import { useState } from "react";
+import { flushSync } from "react-dom";
+import { toast } from "sonner";
 import { Logo } from "~components/logo";
+import { useAuth } from "~lib/auth";
 import { supabase } from "~lib/supabase";
 import { Avatar } from "~ui/avatar";
 import { Button, buttonStyles } from "~ui/button";
@@ -66,7 +70,31 @@ const routes = [
 
 function Home() {
 	const { session, user } = Route.useLoaderData();
+	const { updateSession, signOut } = useAuth();
 	const [isSheetOpen, setIsSheetOpen] = useState(false);
+	const navigate = Route.useNavigate();
+
+	const { mutateAsync: signOutUser } = useMutation({
+		mutationKey: ["signOut"],
+		mutationFn: async () => {
+			await signOut();
+		},
+		onSuccess: () => {
+			flushSync(() => {
+				updateSession(null);
+			});
+			navigate({ to: "/sign-in" });
+		},
+	});
+
+	const handleSignOut = () => {
+		toast.promise(signOutUser(), {
+			loading: "Signing out...",
+			success: "Signed out successfully",
+			error: "Failed to sign out",
+		});
+	};
+
 	return (
 		<div>
 			{/* Top Nav Bar */}
@@ -121,7 +149,7 @@ function Home() {
 										<IconSettings />
 										Settings
 									</Menu.Item>
-									<Menu.Item>
+									<Menu.Item onAction={handleSignOut}>
 										<IconLogout />
 										Sign out
 									</Menu.Item>
@@ -231,7 +259,7 @@ function Home() {
 										<IconSettings />
 										Settings
 									</Menu.Item>
-									<Menu.Item className="text-sm">
+									<Menu.Item onAction={handleSignOut} className="text-sm">
 										<IconLogout />
 										Sign out
 									</Menu.Item>
