@@ -232,34 +232,47 @@ export type Database = {
         Row: {
           content: string
           createdAt: string
+          donation_request_id: string | null
           id: string
           isRead: boolean
           receiverId: string
           senderId: string
           title: string
+          type: Database["public"]["Enums"]["notificationtype"]
           updatedAt: string
         }
         Insert: {
           content: string
           createdAt?: string
+          donation_request_id?: string | null
           id?: string
           isRead?: boolean
           receiverId: string
           senderId: string
           title: string
+          type?: Database["public"]["Enums"]["notificationtype"]
           updatedAt?: string
         }
         Update: {
           content?: string
           createdAt?: string
+          donation_request_id?: string | null
           id?: string
           isRead?: boolean
           receiverId?: string
           senderId?: string
           title?: string
+          type?: Database["public"]["Enums"]["notificationtype"]
           updatedAt?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "notifications_donation_request_id_fkey"
+            columns: ["donation_request_id"]
+            isOneToOne: false
+            referencedRelation: "donation_requests"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "notifications_receiverid_fkey"
             columns: ["receiverId"]
@@ -308,6 +321,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_donation_request_with_chat: {
+        Args: {
+          request_id: string
+        }
+        Returns: undefined
+      }
       create_book: {
         Args: {
           book_data: Json
@@ -320,8 +339,9 @@ export type Database = {
           receiver_id: string
           title: string
           content: string
+          donation_id: string
         }
-        Returns: undefined
+        Returns: string
       }
       get_active_requests_received: {
         Args: {
@@ -438,6 +458,7 @@ export type Database = {
       }
     }
     Enums: {
+      notificationtype: "book_request" | "other"
       NotificationType: "DONATION_REQUEST"
       RequestStatus: "PENDING" | "ACCEPTED" | "REJECTED" | "COMPLETED"
     }

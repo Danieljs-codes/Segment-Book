@@ -26,10 +26,9 @@ export const booksReceivedQueryOptions = (userId: string) =>
 		queryKey: ["books-received", userId],
 		queryFn: async () => {
 			const { data, error } = await supabase
-				.from("donation_requests")
-				.select(`id, books(title, author)`)
-				.eq("requesterId", userId)
-				.eq("status", "COMPLETED");
+				.from("books")
+				.select("id, title, author")
+				.eq("donatedToId", userId);
 
 			if (error) {
 				console.error("Error fetching received books:", error);

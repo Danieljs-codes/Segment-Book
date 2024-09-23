@@ -87,6 +87,41 @@ function Notifications() {
 		),
 	);
 
+	const { mutateAsync: acceptDonationRequest } = useMutation({
+		mutationKey: ["accept-donation-request"],
+		mutationFn: async (donationRequestId: string) => {
+			const { data, error } = await supabase.rpc(
+				"accept_donation_request_with_chat",
+				{
+					request_id: donationRequestId,
+				},
+			);
+
+			if (error) {
+				console.error("Error accepting donation request:", error);
+				throw new Error(error.message);
+			}
+
+			return data;
+		},
+		onError: (error) => {
+			console.error("Error in acceptDonationRequest mutation:", error);
+			// You might want to show an error message to the user here
+		},
+		onSuccess: () => {
+			// Returning the promise would make the query stay in loading state untill the promise is resolved
+			return Promise.all([
+				queryClient.invalidateQueries({ queryKey: ["user-notifications"] }),
+				queryClient.invalidateQueries({ queryKey: ["user-requests"] }),
+				queryClient.invalidateQueries({
+					queryKey: ["active-requests-received"],
+				}),
+				queryClient.invalidateQueries({ queryKey: ["active-requests-sent"] }),
+				queryClient.invalidateQueries({ queryKey: ["user-chats"] }),
+			]);
+		},
+	});
+
 	const { mutateAsync } = useMutation({
 		mutationKey: ["mark-notifications-as-read"],
 		mutationFn: async () => {
@@ -202,6 +237,36 @@ function Notifications() {
 										<p className="text-xs md:text-sm text-muted-fg mt-1">
 											{notification.content}
 										</p>
+										{notification.type === "book_request" &&
+										notification.donation_request_id ? (
+											<div className="mt-2 flex items-center gap-2">
+												<Button size="extra-small" intent="secondary">
+													Decline
+												</Button>
+												<Button
+													onPress={() => {
+														if (!notification.donation_request_id) {
+															toast.error("Donation request ID is null");
+															return;
+														}
+														toast.promise(
+															acceptDonationRequest(
+																notification.donation_request_id,
+															),
+															{
+																loading: "Accepting donation request...",
+																success: "Donation request accepted!",
+																error: "Error accepting donation request.",
+															},
+														);
+													}}
+													size="extra-small"
+													intent="primary"
+												>
+													Accept
+												</Button>
+											</div>
+										) : null}
 										<div className="flex items-center justify-between">
 											<p className="text-xs text-muted-fg mt-2">
 												{new Date(notification.createdAt).toLocaleString(
