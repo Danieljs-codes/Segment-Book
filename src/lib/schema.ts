@@ -25,6 +25,13 @@ export const signUpSchema = z.object({
 		.regex(/.*[@$!%*?&].*/, {
 			message: "Password must contain at least one special character (@$!%*?&)",
 		}),
+	username: z
+		.string()
+		.min(3, { message: "Username must be at least 3 characters long" })
+		.max(30, { message: "Username must not exceed 30 characters" })
+		.regex(/^[a-zA-Z0-9_-]+$/, {
+			message: "Username can only contain letters, numbers, underscores, and hyphens",
+		}),
 });
 
 export const donationSchema = z.object({
@@ -36,6 +43,15 @@ export const donationSchema = z.object({
 		.refine((value) => /^[\w\s.,!?'-]+$/.test(value), {
 			message:
 				"Title can only contain letters, numbers, spaces, and basic punctuation",
+		}),
+	author: z
+		.string()
+		.min(1, { message: "Author is required" })
+		.max(100, { message: "Author must not exceed 100 characters" })
+		.trim()
+		.refine((value) => /^[\w\s.,!?'-]+$/.test(value), {
+			message:
+				"Author can only contain letters, numbers, spaces, and basic punctuation",
 		}),
 	description: z
 		.string()

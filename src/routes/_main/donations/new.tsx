@@ -39,11 +39,12 @@ function NewDonation() {
 		handleSubmit,
 		formState: { errors },
 		setValue,
-		register, // Add this
+		register,
 	} = useForm<DonationFormData>({
 		resolver: zodResolver(donationSchema),
 		defaultValues: {
 			title: "",
+			author: "", // Add this
 			description: "",
 			language: undefined,
 			condition: undefined,
@@ -59,16 +60,14 @@ function NewDonation() {
 				.from("Books-image")
 				.upload(`public/${Date.now()}_${input.image.name}`, input.image);
 
-			if (uploadError) {
-				throw uploadError;
-			}
+			if (uploadError) throw uploadError;
 
 			const imageUrl = uploadData.path;
 
 			const { data, error } = await supabase.rpc("create_book", {
 				book_data: {
 					title: input.title,
-					author: "John Doe",
+					author: input.author, // Add this
 					ownerId: userId,
 					description: input.description,
 					language: input.language,
@@ -78,15 +77,12 @@ function NewDonation() {
 				},
 			});
 
-			if (error) {
-				throw error;
-			}
+			if (error) throw error;
 
 			return data;
 		},
 
 		onSuccess: (data) => {
-			// Invalidate relevant queries
 			queryClient.invalidateQueries({ queryKey: ["user-donated-books"] });
 			queryClient.invalidateQueries({ queryKey: ["total-donations"] });
 			queryClient.invalidateQueries({ queryKey: ["listed-not-donated-books"] });
@@ -122,13 +118,6 @@ function NewDonation() {
 			error: "Failed to create donation. Please try again.",
 		});
 	};
-
-	// Add this useEffect hook
-	useEffect(() => {
-		if (Object.keys(errors).length > 0) {
-			console.log("Validation errors:", errors);
-		}
-	}, [errors]);
 
 	return (
 		<div>
@@ -176,6 +165,19 @@ function NewDonation() {
 									)}
 								/>
 								<Controller
+									name="author" // Add this block
+									control={control}
+									render={({ field }) => (
+										<TextField
+											label="Author"
+											placeholder="Book author"
+											errorMessage={errors.author?.message}
+											isInvalid={!!errors.author}
+											{...field}
+										/>
+									)}
+								/>
+								<Controller
 									name="description"
 									control={control}
 									render={({ field }) => (
@@ -193,7 +195,7 @@ function NewDonation() {
 								<Controller
 									name="image"
 									control={control}
-									rules={{ required: "Image is required" }} // Add this line
+									rules={{ required: "Image is required" }}
 									render={({ field: { onChange, value, ...field } }) => (
 										<div>
 											<label
@@ -208,7 +210,7 @@ function NewDonation() {
 												accept="image/*"
 												{...register("image", {
 													required: "Image is required",
-												})} // Add this line
+												})}
 												onChange={(e) => {
 													onFileChange(e);
 													onChange(e.target.files?.[0]);

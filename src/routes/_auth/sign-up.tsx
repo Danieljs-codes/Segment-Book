@@ -32,13 +32,29 @@ function SignUpComponent() {
 	const { mutate, isPending, error } = useMutation({
 		mutationKey: ["sign-up"],
 		mutationFn: async (data: z.infer<typeof signUpSchema>) => {
+			// Check if username already exists
+			const { data: existingUser, error: userError } = await supabase
+				.from("users")
+				.select("id")
+				.eq("username", data.username)
+				.single();
+
+			if (userError && userError.code !== "PGRST116") {
+				console.log(userError);
+				throw userError;
+			}
+
+			if (existingUser) {
+				throw new Error("Username already exists");
+			}
+
 			const { data: authData, error: authError } = await supabase.auth.signUp({
 				email: data.email,
 				password: data.password,
 				options: {
 					data: {
 						full_name: data.fullName,
-						username: fullNameToKebabCase(data.fullName),
+						username: data.username,
 					},
 				},
 			});
@@ -72,6 +88,7 @@ function SignUpComponent() {
 			fullName: "",
 			email: "",
 			password: "",
+			username: "",
 		},
 	});
 
@@ -133,6 +150,20 @@ function SignUpComponent() {
 							autoComplete="new-email"
 							placeholder="Enter your email"
 							type="email"
+							isInvalid={!!error}
+							errorMessage={error?.message}
+							{...field}
+						/>
+					)}
+				/>
+				<Controller
+					control={control}
+					name="username"
+					render={({ field, fieldState: { error } }) => (
+						<TextField
+							label="Username"
+							autoComplete="new-username"
+							placeholder="Enter your username"
 							isInvalid={!!error}
 							errorMessage={error?.message}
 							{...field}
