@@ -83,7 +83,7 @@ function Home() {
 			flushSync(() => {
 				updateSession(null);
 			});
-			navigate({ to: "/sign-in" });
+			navigate({ to: "/sign-in", replace: true });
 		},
 	});
 

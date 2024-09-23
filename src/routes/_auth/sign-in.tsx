@@ -5,7 +5,7 @@ import { signInSchema } from "~lib/schema";
 import type { z } from "zod";
 import { TextField } from "~ui/text-field";
 import { IconBrandGoogle, IconEye, IconEyeOff } from "justd-icons";
-import { Button } from "~ui/button";
+import { Button, buttonStyles } from "~ui/button";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "~lib/supabase";
@@ -14,6 +14,7 @@ import { useAuth } from "~lib/auth";
 import { toast } from "sonner";
 import { flushSync } from "react-dom";
 import { linkStyles } from "~ui/link";
+import { Tooltip } from "~ui/tooltip";
 
 export const Route = createFileRoute("/_auth/sign-in")({
 	component: SignInComponent,
@@ -102,13 +103,23 @@ function SignInComponent() {
 							errorMessage={error?.message}
 							{...field}
 							suffix={
-								<Button
-									size="square-petite"
-									appearance="plain"
-									onPress={() => setIsPasswordVisible((v) => !v)}
-								>
-									{isPasswordVisible ? <IconEyeOff /> : <IconEye />}
-								</Button>
+								<Tooltip delay={0}>
+									<Tooltip.Trigger
+										aria-label={
+											isPasswordVisible ? "Hide password" : "Show password"
+										}
+										className={buttonStyles({
+											appearance: "plain",
+											size: "square-petite",
+										})}
+										onPress={() => setIsPasswordVisible((v) => !v)}
+									>
+										{isPasswordVisible ? <IconEyeOff /> : <IconEye />}
+									</Tooltip.Trigger>
+									<Tooltip.Content className="text-xs">
+										{isPasswordVisible ? "Hide password" : "Show password"}
+									</Tooltip.Content>
+								</Tooltip>
 							}
 						/>
 					)}
