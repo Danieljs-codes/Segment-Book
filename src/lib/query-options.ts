@@ -275,29 +275,42 @@ export const userChatsQueryOptions = ({ userId }: { userId: string }) =>
 		},
 	});
 
-export const chatMessagesQueryOptions = (chatId: string, userId: string) => ({
+export const chatMessagesQueryOptions = (chatId: string) => ({
 	queryKey: ["chatMessages", chatId],
 	queryFn: async () => {
-		const { data: messages, error } = await supabase
-			.from("messages")
-			.select("*")
-			.eq("chat_id", chatId)
-			.order("createdAt", { ascending: true });
+		const { data, error } = await supabase.rpc("get_chat_messages", {
+			p_chat_id: chatId,
+		});
 
-		if (error) throw error;
+		if (error) {
+			console.error("Error fetching chat messages:", error);
+			throw new Error(error.message);
+		}
 
-		const { data: otherUser, error: userError } = await supabase
-			.from("users")
-			.select("id, name, email")
-			.neq("id", userId)
-			.limit(1)
-			.single();
-
-		if (userError) throw userError;
-
-		return { messages, otherUser };
+		return data;
 	},
 });
+
+export const getChatParticipantsQueryOptions = (
+	chatId: string,
+	userId: string,
+) =>
+	queryOptions({
+		queryKey: ["chat-participants", chatId, userId],
+		queryFn: async () => {
+			const { data, error } = await supabase.rpc("get_chat_participants", {
+				p_chat_id: chatId,
+				p_current_user_id: userId,
+			});
+
+			if (error) {
+				console.error("Error fetching chat participants:", error);
+				throw new Error(error.message);
+			}
+
+			return data;
+		},
+	});
 
 export const bookFiltersQueryOptions = () =>
 	queryOptions({

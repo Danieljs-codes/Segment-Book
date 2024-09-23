@@ -349,18 +349,48 @@ export type Database = {
           status: string
         }[]
       }
+      get_chat_messages: {
+        Args: {
+          p_chat_id: string
+        }
+        Returns: {
+          message_id: string
+          content: string
+          message_created_at: string
+          sender_id: string
+          sender_name: string
+          sender_username: string
+          recipient_id: string
+          recipient_name: string
+          recipient_username: string
+        }[]
+      }
+      get_chat_participants: {
+        Args: {
+          p_chat_id: string
+          p_current_user_id: string
+        }
+        Returns: {
+          current_user_id: string
+          current_user_name: string
+          current_user_username: string
+          other_user_id: string
+          other_user_name: string
+          other_user_username: string
+        }[]
+      }
       get_user_chats: {
         Args: {
           user_id: string
         }
         Returns: {
           id: string
-          created_at: string
-          requester_id: string
-          donor_id: string
-          other_user_name: string
-          last_message: string
-          other_user_id: string
+          donation_request_id: string
+          donation_request: Json
+          messages: Json[]
+          book: Json
+          requester: Json
+          donor: Json
         }[]
       }
       get_user_notifications: {
@@ -412,7 +442,14 @@ export type Database = {
       RequestStatus: "PENDING" | "ACCEPTED" | "REJECTED" | "COMPLETED"
     }
     CompositeTypes: {
-      [_ in never]: never
+      chat_message_v2: {
+        id: string | null
+        content: string | null
+        created_at: string | null
+        sender_id: string | null
+        sender_name: string | null
+        sender_username: string | null
+      }
     }
   }
 }

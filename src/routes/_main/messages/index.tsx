@@ -28,6 +28,7 @@ export const Route = createFileRoute("/_main/messages/")({
 function Messages() {
 	const { userId } = Route.useLoaderData();
 	const { data: chats } = useSuspenseQuery(userChatsQueryOptions({ userId }));
+
 	return (
 		<div>
 			<div className="mt-2 mb-1">
@@ -42,53 +43,65 @@ function Messages() {
 				aria-label="Search"
 			/>
 			<div>
-				{chats.map((chat) => (
-					<Link
-						key={chat.id}
-						to="/messages/$chatId"
-						params={{ chatId: chat.id }}
-						className="block"
-					>
-						<Card className="p-4 border-0 shadow-none hover:bg-muted transition-colors duration-200">
-							<div className="flex items-start gap-2">
-								<Avatar
-									src={`https://i.pravatar.cc/300?u=${chat.other_user_name}`}
-									alt={chat.other_user_name}
-									initials={chat.other_user_name.charAt(0)}
-									size="medium"
-								/>
-								<div className="flex-1">
-									<div className="flex items-center justify-between">
-										<p className="text-sm font-medium">
-											{chat.other_user_name}
-										</p>
-										<p className="text-xs text-muted-fg">
-											{(() => {
-												const now = new Date();
-												const createdAt = new Date(chat.created_at);
-												const diffInSeconds = Math.floor(
-													(now.getTime() - createdAt.getTime()) / 1000,
-												);
+				{chats.map((chat) => {
+					const otherUser =
+						(chat.requester as { id: string })?.id === userId
+							? chat.donor
+							: chat.requester;
+					const lastMessage = (chat.messages as any[])?.[
+						chat.messages.length - 1
+					];
 
-												if (diffInSeconds < 60) return "just now";
-												if (diffInSeconds < 3600)
-													return `${Math.floor(diffInSeconds / 60)}m ago`;
-												if (diffInSeconds < 86400)
-													return `${Math.floor(diffInSeconds / 3600)}h ago`;
-												if (diffInSeconds < 604800)
-													return `${Math.floor(diffInSeconds / 86400)}d ago`;
-												return `${Math.floor(diffInSeconds / 604800)}w ago`;
-											})()}
+					if (!otherUser || !lastMessage) return null;
+
+					return (
+						<Link
+							key={chat.id}
+							to="/messages/$chatId"
+							params={{ chatId: chat.id }}
+							className="block"
+						>
+							<Card className="p-4 border-0 shadow-none hover:bg-muted transition-colors duration-200">
+								<div className="flex items-start gap-2">
+									<Avatar
+										src={`https://i.pravatar.cc/300?u=${(otherUser as { email: string }).email}`}
+										alt={(otherUser as { name: string }).name}
+										initials={(otherUser as { name: string }).name.charAt(0)}
+										size="medium"
+									/>
+									<div className="flex-1">
+										<div className="flex items-center justify-between">
+											<p className="text-sm font-medium">
+												{(otherUser as { name: string }).name}
+											</p>
+											<p className="text-xs text-muted-fg">
+												{(() => {
+													const now = new Date();
+													const createdAt = new Date(lastMessage.createdAt);
+													const diffInSeconds = Math.floor(
+														(now.getTime() - createdAt.getTime()) / 1000,
+													);
+
+													if (diffInSeconds < 60) return "just now";
+													if (diffInSeconds < 3600)
+														return `${Math.floor(diffInSeconds / 60)}m ago`;
+													if (diffInSeconds < 86400)
+														return `${Math.floor(diffInSeconds / 3600)}h ago`;
+													if (diffInSeconds < 604800)
+														return `${Math.floor(diffInSeconds / 86400)}d ago`;
+													return `${Math.floor(diffInSeconds / 604800)}w ago`;
+												})()}
+											</p>
+										</div>
+										<p className="text-xs md:text-sm text-muted-fg mt-1 text-ellipsis line-clamp-2">
+											{lastMessage.content}
 										</p>
 									</div>
-									<p className="text-xs md:text-sm text-muted-fg mt-1 text-ellipsis line-clamp-2">
-										{chat.last_message}
-									</p>
 								</div>
-							</div>
-						</Card>
-					</Link>
-				))}
+							</Card>
+						</Link>
+					);
+				})}
 			</div>
 		</div>
 	);
