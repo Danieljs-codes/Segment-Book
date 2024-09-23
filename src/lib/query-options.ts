@@ -424,7 +424,7 @@ export const donorsByIdQueryOptions = (userId: string) =>
 				.from("books")
 				.select(`
 					*,
-					donor:users(id, name, email, createdAt, avatar)
+					donor:users!books_ownerId_fkey(id, name, email, createdAt, avatar)
 				`)
 				.eq("ownerId", userId)
 				.order("createdAt", { ascending: false });
