@@ -45,14 +45,14 @@ function Messages() {
 			<div>
 				{chats.map((chat) => {
 					const otherUser =
-						(chat.requester as { id: string })?.id === userId
-							? chat.donor
-							: chat.requester;
+						chat.requester?.id === userId ? chat.donor : chat.requester;
 					const lastMessage = (chat.messages as any[])?.[
 						chat.messages.length - 1
 					];
 
 					if (!otherUser || !lastMessage) return null;
+
+					console.log(otherUser);
 
 					return (
 						<Link

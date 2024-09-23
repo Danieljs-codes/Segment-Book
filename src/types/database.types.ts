@@ -419,11 +419,11 @@ export type Database = {
         Returns: {
           id: string
           donation_request_id: string
-          donation_request: Json
-          messages: Json[]
-          book: Json
-          requester: Json
-          donor: Json
+          donation_request: Database["public"]["CompositeTypes"]["donation_request_type"]
+          messages: Database["public"]["CompositeTypes"]["message_type"][]
+          book: Database["public"]["CompositeTypes"]["book_type"]
+          requester: Database["public"]["CompositeTypes"]["user_type"]
+          donor: Database["public"]["CompositeTypes"]["user_type"]
         }[]
       }
       get_user_notifications: {
@@ -476,6 +476,11 @@ export type Database = {
       RequestStatus: "PENDING" | "ACCEPTED" | "REJECTED" | "COMPLETED"
     }
     CompositeTypes: {
+      book_type: {
+        id: string | null
+        title: string | null
+        author: string | null
+      }
       chat_message_v2: {
         id: string | null
         content: string | null
@@ -483,6 +488,26 @@ export type Database = {
         sender_id: string | null
         sender_name: string | null
         sender_username: string | null
+      }
+      donation_request_type: {
+        id: string | null
+        bookId: string | null
+        requesterId: string | null
+        donorId: string | null
+        status: string | null
+      }
+      message_type: {
+        id: string | null
+        content: string | null
+        createdAt: string | null
+        senderId: string | null
+      }
+      user_type: {
+        id: string | null
+        name: string | null
+        email: string | null
+        username: string | null
+        avatar: string | null
       }
     }
   }
