@@ -292,6 +292,7 @@ export type Database = {
       users: {
         Row: {
           authUserId: string
+          avatar: string | null
           createdAt: string
           email: string
           id: string
@@ -300,6 +301,7 @@ export type Database = {
         }
         Insert: {
           authUserId: string
+          avatar?: string | null
           createdAt?: string
           email: string
           id?: string
@@ -308,6 +310,7 @@ export type Database = {
         }
         Update: {
           authUserId?: string
+          avatar?: string | null
           createdAt?: string
           email?: string
           id?: string
@@ -402,9 +405,11 @@ export type Database = {
           current_user_id: string
           current_user_name: string
           current_user_username: string
+          current_user_avatar: string
           other_user_id: string
           other_user_name: string
           other_user_username: string
+          other_user_avatar: string
         }[]
       }
       get_user_chats: {

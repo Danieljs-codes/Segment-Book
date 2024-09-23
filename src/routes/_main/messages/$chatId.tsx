@@ -126,7 +126,7 @@ function MessagesChatId() {
 				<Avatar
 					shape="circle"
 					size="medium"
-					src="https://i.pravatar.cc/300?u=user2"
+					src={participants[0].other_user_avatar}
 				/>
 				<div>
 					<Heading className="text-center" level={3} tracking="tight">

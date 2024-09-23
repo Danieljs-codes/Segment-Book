@@ -228,7 +228,8 @@ export const userNotificationsQueryOptions = (
 					user:users!notifications_senderid_fkey (
 						id,
 						name,
-						email
+						email,
+						avatar
 					),
 					donation_request:donation_requests (
 						status
@@ -423,13 +424,35 @@ export const donorsByIdQueryOptions = (userId: string) =>
 				.from("books")
 				.select(`
 					*,
-					donor:users(id, name, email, createdAt)
+					donor:users(id, name, email, createdAt, avatar)
 				`)
 				.eq("ownerId", userId)
 				.order("createdAt", { ascending: false });
 
 			if (error) {
 				console.error("Error fetching donors by id:", error);
+				throw new Error(error.message);
+			}
+
+			return data;
+		},
+	});
+
+export const listedAndDonatedQueryOptions = (userId: string) =>
+	queryOptions({
+		queryKey: ["listed-and-donated", userId],
+		queryFn: async () => {
+			const { data, error } = await supabase
+				.from("books")
+				.select(
+					"id, title, author, description, isDonated, language, condition",
+				)
+				.eq("ownerId", userId)
+				.eq("isDonated", true)
+				.limit(10);
+
+			if (error) {
+				console.error("Error fetching listed and donated books:", error);
 				throw new Error(error.message);
 			}
 

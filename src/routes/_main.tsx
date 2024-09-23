@@ -25,6 +25,7 @@ import { Aside } from "~ui/aside";
 import { Button } from "~ui/button";
 import { Menu } from "~ui/menu";
 import { useTheme } from "~components/theme-provider";
+import { supabase } from "~lib/supabase";
 
 const routes = [
 	{
@@ -75,7 +76,21 @@ export const Route = createFileRoute("/_main")({
 			});
 		}
 
-		return { session };
+		const { data: user } = await supabase
+			.from("users")
+			.select("*")
+			.eq("id", session.user.id)
+			.limit(1)
+			.single();
+
+		if (!user) {
+			toast.error("You must be signed in to access this page.");
+			throw redirect({
+				to: "/sign-in",
+			});
+		}
+
+		return { session, user };
 	},
 	loader: ({ context }) => {},
 	component: MainLayout,
@@ -85,7 +100,7 @@ function MainLayout() {
 	const { isLoading } = useAuth();
 	const { setTheme, theme } = useTheme();
 	const { pathname } = useLocation();
-	const { session } = Route.useRouteContext();
+	const { session, user } = Route.useRouteContext();
 	const matches = useMatches();
 
 	if (matches.some((match) => match.status === "pending")) return null;
@@ -123,7 +138,7 @@ function MainLayout() {
 						<Menu.Trigger>
 							<Avatar
 								shape="circle"
-								src={`https://i.pravatar.cc/300?u=${session?.user?.email}`}
+								src={user.avatar}
 								size="medium"
 							/>
 						</Menu.Trigger>
@@ -186,7 +201,8 @@ function MainLayout() {
 									size="extra-small"
 									shape="square"
 									className="-ml-1.5"
-									src={`https://i.pravatar.cc/300?u=${session?.user?.email}`}
+									initials={user.name.split(" ").map(word => word[0]).join("") || ""}
+									src={user.avatar}
 								/>
 								{session.user.user_metadata?.full_name
 									?.split(" ")

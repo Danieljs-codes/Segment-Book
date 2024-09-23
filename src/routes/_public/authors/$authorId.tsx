@@ -65,10 +65,7 @@ function Author() {
 				<Card>
 					<Card.Header>
 						<div className="flex gap-4 items-center">
-							<Avatar
-								className="size-20"
-								src={`https://i.pravatar.cc/300?u=${books[0]?.donor?.email}`}
-							/>
+							<Avatar className="size-20" src={books[0]?.donor?.avatar} />
 							<div>
 								<h2 className="font-bold text-lg mb-1">
 									{books[0]?.donor?.name}

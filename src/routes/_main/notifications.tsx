@@ -222,7 +222,7 @@ function Notifications() {
 								<div className="flex items-start gap-4">
 									<Avatar
 										size="medium"
-										src={`https://i.pravatar.cc/300?u=${notification.user?.email}`}
+										src={notification.user?.avatar}
 										initials={
 											notification.user?.name
 												?.split(" ")

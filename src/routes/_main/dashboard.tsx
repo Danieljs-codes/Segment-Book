@@ -13,6 +13,7 @@ import {
 	activeRequestsSentQueryOptions,
 	listedButNotDonatedBooksQueryOptions,
 	bookListedButNotDonatedQueryOptions,
+	listedAndDonatedQueryOptions,
 } from "~lib/query-options";
 import { Card } from "~ui/card";
 import { Grid } from "~ui/grid";
@@ -20,6 +21,7 @@ import { Heading } from "~ui/heading";
 import { Menu } from "~ui/menu";
 import { Table } from "~ui/table";
 import { Skeleton } from "~ui/skeleton";
+import { Badge } from "~ui/badge";
 
 export const Route = createFileRoute("/_main/dashboard")({
 	loader: async ({ context }) => {
@@ -33,6 +35,7 @@ export const Route = createFileRoute("/_main/dashboard")({
 		queryClient.ensureQueryData(activeRequestsSentQueryOptions(userId));
 		queryClient.ensureQueryData(listedButNotDonatedBooksQueryOptions(userId));
 		queryClient.ensureQueryData(bookListedButNotDonatedQueryOptions(userId));
+		queryClient.ensureQueryData(listedAndDonatedQueryOptions(userId));
 
 		return {
 			crumb: "Overview",
@@ -146,14 +149,14 @@ function OverviewComponent() {
 	const { data: activeRequestsReceived } = useSuspenseQuery(
 		activeRequestsReceivedQueryOptions(userId),
 	);
-	const { data: activeRequestsSent } = useSuspenseQuery(
-		activeRequestsSentQueryOptions(userId),
-	);
 	const { data: listedButNotDonatedBooks } = useSuspenseQuery(
 		listedButNotDonatedBooksQueryOptions(userId),
 	);
 	const { data: bookListedButNotDonated } = useSuspenseQuery(
 		bookListedButNotDonatedQueryOptions(userId),
+	);
+	const { data: listedAndDonatedBooks } = useSuspenseQuery(
+		listedAndDonatedQueryOptions(userId),
 	);
 
 	return (
@@ -275,8 +278,9 @@ function OverviewComponent() {
 						<Table.Header>
 							<Table.Column isRowHeader>Title</Table.Column>
 							<Table.Column>Author</Table.Column>
-							<Table.Column>Requested by</Table.Column>
-							<Table.Column>Requested on</Table.Column>
+							<Table.Column>Description</Table.Column>
+							<Table.Column>Language</Table.Column>
+							<Table.Column>Condition</Table.Column>
 						</Table.Header>
 						<Table.Body
 							renderEmptyState={() => (
@@ -284,21 +288,22 @@ function OverviewComponent() {
 									You currently have no requests.
 								</div>
 							)}
-							items={activeRequestsReceived}
+							items={listedAndDonatedBooks}
 						>
 							{(request) => (
-								<Table.Row id={request.donation_request_id}>
-									<Table.Cell>{request.book_title}</Table.Cell>
-									<Table.Cell>{request.book_author}</Table.Cell>
-									<Table.Cell>{request.requester_name}</Table.Cell>
+								<Table.Row id={request.id}>
+									<Table.Cell>{request.title}</Table.Cell>
+									<Table.Cell>{request.author}</Table.Cell>
 									<Table.Cell>
-										{new Date(request.request_date).toLocaleString("en-US", {
-											year: "numeric",
-											month: "short",
-											day: "numeric",
-											hour: "2-digit",
-											minute: "2-digit",
-										})}
+										{request.description && request.description.length > 50
+											? `${request.description.slice(0, 50)}...`
+											: request.description}
+									</Table.Cell>
+									<Table.Cell>
+										<Badge className="capitalize">{request.language}</Badge>
+									</Table.Cell>
+									<Table.Cell>
+										<Badge className="capitalize">{request.condition}</Badge>
 									</Table.Cell>
 								</Table.Row>
 							)}

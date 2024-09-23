@@ -11,6 +11,7 @@ import {
 } from "justd-icons";
 import { useState } from "react";
 import { Logo } from "~components/logo";
+import { supabase } from "~lib/supabase";
 import { Avatar } from "~ui/avatar";
 import { Button, buttonStyles } from "~ui/button";
 import { Container } from "~ui/container";
@@ -26,7 +27,24 @@ export const Route = createFileRoute("/_public")({
 			await new Promise((resolve) => setTimeout(resolve, 50));
 		}
 
-		return { session };
+		let user = null;
+
+		if (session) {
+			const { data: userData, error } = await supabase
+				.from("users")
+				.select("*")
+				.eq("id", session.user.id)
+				.limit(1)
+				.single();
+
+			if (error) {
+				return { session, user: null };
+			}
+
+			user = userData;
+		}
+
+		return { session, user };
 	},
 	component: Home,
 });
@@ -47,7 +65,7 @@ const routes = [
 ];
 
 function Home() {
-	const { session } = Route.useLoaderData();
+	const { session, user } = Route.useLoaderData();
 	const [isSheetOpen, setIsSheetOpen] = useState(false);
 	return (
 		<div>
@@ -76,7 +94,7 @@ function Home() {
 							))}
 						</div>
 					</div>
-					{session && (
+					{session && user && (
 						<div className="hidden md:flex gap-x-3">
 							<div className="space-x-1">
 								<Button size="square-petite" appearance="plain">
@@ -88,7 +106,7 @@ function Home() {
 							</div>
 							<Menu>
 								<Menu.Trigger>
-									<Avatar src={`https://i.pravatar.cc/300?u=${"irsyadadl"}`} />
+									<Avatar src={user.avatar} />
 								</Menu.Trigger>
 								<Menu.Content className="min-w-[180px]">
 									<Menu.Item href="/dashboard">
@@ -182,20 +200,18 @@ function Home() {
 						))}
 					</Sheet.Body>
 					<Sheet.Footer>
-						{session && (
+						{session && user && (
 							<Menu>
 								<Menu.Trigger>
 									<div className="flex justify-between">
 										<div className="flex items-center gap-x-3">
-											<Avatar
-												src={`https://i.pravatar.cc/300?u=${session?.user?.email}`}
-											/>
+											<Avatar src={user.avatar} />
 											<div>
 												<span className="text-sm font-medium text-fg block -mb-1.5">
-													{session.user.user_metadata?.full_name}
+													{user.name}
 												</span>
 												<span className="text-muted-fg text-xs">
-													{session.user.email}
+													{user.username}
 												</span>
 											</div>
 										</div>

@@ -26,10 +26,7 @@ function Authors() {
 				{donors.map((donor) => (
 					<Card key={donor.id}>
 						<Card.Header className="flex flex-row items-center gap-4">
-							<Avatar
-								size="large"
-								src={`https://i.pravatar.cc/300?u=${donor.email}`}
-							/>
+							<Avatar size="large" src={donor.avatar} />
 							<div>
 								<Card.Title className="text-lg font-bold">
 									{donor.name}

@@ -64,7 +64,7 @@ function Messages() {
 							<Card className="p-4 border-0 shadow-none hover:bg-muted transition-colors duration-200">
 								<div className="flex items-start gap-2">
 									<Avatar
-										src={`https://i.pravatar.cc/300?u=${(otherUser as { email: string }).email}`}
+										src={otherUser.avatar}
 										alt={(otherUser as { name: string }).name}
 										initials={(otherUser as { name: string }).name.charAt(0)}
 										size="medium"
