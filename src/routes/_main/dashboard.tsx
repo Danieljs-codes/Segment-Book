@@ -268,9 +268,9 @@ function OverviewComponent() {
 			<div>
 				<Card.Header
 					className="px-0 pt-0 space-y-0.5"
-					title="Requested Books"
+					title="Books you've listed and donated"
 					titleClassName="text-base md:text-lg"
-					description="Books you've requested that are pending acceptance"
+					description="Books you've donated to others on the platform"
 					descriptionClassName="text-sm"
 				/>
 				<Card>
