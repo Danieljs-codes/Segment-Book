@@ -36,6 +36,7 @@ function HomeComponent() {
 							intent: "primary",
 							className: "w-full sm:w-fit",
 						})}
+						preload={false}
 					>
 						Donate a Book
 					</Link>
@@ -201,6 +202,7 @@ function HomeComponent() {
 							intent: "primary",
 							className: "w-full sm:w-fit",
 						})}
+						preload={false}
 					>
 						Donate a Book
 					</Link>

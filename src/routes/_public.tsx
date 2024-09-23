@@ -174,6 +174,7 @@ function Home() {
 						<div className="hidden md:flex gap-x-2">
 							<Link
 								to="/sign-in"
+								preload={false}
 								className={buttonStyles({
 									intent: "secondary",
 									size: "extra-small",
