@@ -7,13 +7,16 @@ import {
 	IconFolderDelete,
 	IconHamburger,
 	IconLogout,
+	IconMoon,
 	IconSearch,
 	IconSettings,
+	IconSun,
 } from "justd-icons";
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { toast } from "sonner";
 import { Logo } from "~components/logo";
+import { useTheme } from "~components/theme-provider";
 import { useAuth } from "~lib/auth";
 import { supabase } from "~lib/supabase";
 import { Avatar } from "~ui/avatar";
@@ -69,6 +72,7 @@ const routes = [
 ];
 
 function Home() {
+	const { theme, setTheme } = useTheme();
 	const { session, user } = Route.useLoaderData();
 	const { updateSession, signOut } = useAuth();
 	const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -129,7 +133,11 @@ function Home() {
 									<IconSearch className="size-5" />
 								</Button>
 								<Button size="square-petite" appearance="plain">
-									<IconBell className="size-5" />
+									{theme === 'dark' ? (
+										<IconSun className="size-5" />
+									) : (
+										<IconMoon className="size-5" />
+									)}
 								</Button>
 							</div>
 							<Menu>
