@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { IconArrowRight, IconBook, IconContacts } from "justd-icons";
+import { useTheme } from "~components/theme-provider";
 import { Badge } from "~ui/badge";
 import { buttonStyles } from "~ui/button";
 import { Separator } from "~ui/separator";
@@ -9,6 +10,8 @@ export const Route = createFileRoute("/_public/")({
 });
 
 function HomeComponent() {
+	const { theme } = useTheme();
+
 	return (
 		<div>
 			<div className="flex flex-col items-center justify-center mt-16">
@@ -47,11 +50,20 @@ function HomeComponent() {
 						Browse Books
 					</Link>
 				</div>
-				<img
-					src="/dashboard-dark.png"
-					alt="Books"
-					className="w-auto h-auto object-contain mt-20"
-				/>
+				{theme === "dark" && (
+					<img
+						src="/dashboard-dark.png"
+						alt="Books"
+						className="w-auto h-auto object-contain mt-20"
+					/>
+				)}
+				{theme === "light" && (
+					<img
+						src="/dashboard.png"
+						alt="Books"
+						className="w-auto h-auto object-contain mt-20"
+					/>
+				)}
 			</div>
 			<Separator className="my-10" />
 			{/* Features */}
