@@ -42,7 +42,7 @@ function SignInComponent() {
 				updateSession(data.session);
 			});
 			toast.success("Sign in successful!");
-			navigate({ to: "/" });
+			navigate({ to: "/dashboard" });
 		},
 		onError: (error) => {
 			toast.error(error.message);

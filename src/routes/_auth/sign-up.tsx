@@ -71,7 +71,7 @@ function SignUpComponent() {
 				updateSession(data.session);
 			});
 			toast.success("Sign up successful!");
-			navigate({ to: "/" });
+			navigate({ to: "/dashboard" });
 		},
 
 		onError: (error) => {
