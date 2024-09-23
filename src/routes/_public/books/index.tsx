@@ -183,7 +183,7 @@ function Books() {
 						>
 							<Card.Header withoutPadding className="py-3">
 								<img
-									src="https://placehold.co/400x200"
+									src={book.image_url}
 									alt="Book cover placeholder"
 									className="w-full h-auto object-cover"
 								/>
@@ -235,7 +235,7 @@ function Books() {
 						<Modal.Body>
 							<div className="flex flex-col md:flex-row gap-4">
 								<div className="rounded-lg overflow-hidden flex-1">
-									<img src="https://placehold.co/400x200" alt="Book cover" />
+									<img src={selectedBook.image_url} alt="Book cover" />
 								</div>
 								<div className="flex-1">
 									<h3 className="text-muted-fg text-sm ">

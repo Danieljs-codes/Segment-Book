@@ -47,6 +47,7 @@ export type Database = {
           description: string | null
           donatedToId: string | null
           id: string
+          image_url: string
           isDonated: boolean
           language: string
           ownerId: string
@@ -60,6 +61,7 @@ export type Database = {
           description?: string | null
           donatedToId?: string | null
           id?: string
+          image_url: string
           isDonated?: boolean
           language: string
           ownerId: string
@@ -73,6 +75,7 @@ export type Database = {
           description?: string | null
           donatedToId?: string | null
           id?: string
+          image_url?: string
           isDonated?: boolean
           language?: string
           ownerId?: string

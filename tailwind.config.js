@@ -1,6 +1,6 @@
-/** @type {import('tailwindcss').Config} */
 import { withTV } from "tailwind-variants/transformer";
 
+/** @type {import('tailwindcss').Config} */
 const config = withTV({
 	darkMode: ["class"],
 	content: ["./src/**/*.{ts,tsx,js,jsx,md,js,jsx,mdx}", "index.html"],
