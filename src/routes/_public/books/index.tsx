@@ -185,7 +185,7 @@ function Books() {
 								<img
 									src={book.image_url}
 									alt="Book cover placeholder"
-									className="w-full h-auto object-cover"
+									className="w-full h-[200px] object-contain bg-border"
 								/>
 							</Card.Header>
 							<Card.Content className="px-4 pb-4">
@@ -235,7 +235,11 @@ function Books() {
 						<Modal.Body>
 							<div className="flex flex-col md:flex-row gap-4">
 								<div className="rounded-lg overflow-hidden flex-1">
-									<img src={selectedBook.image_url} alt="Book cover" />
+									<img
+										src={selectedBook.image_url}
+										alt="Book cover"
+										className="w-full h-[200px] object-contain bg-border"
+									/>
 								</div>
 								<div className="flex-1">
 									<h3 className="text-muted-fg text-sm ">

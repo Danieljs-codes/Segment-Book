@@ -55,6 +55,16 @@ function NewDonation() {
 	const { mutateAsync: createDonation } = useMutation({
 		mutationKey: ["createDonation"],
 		mutationFn: async (input: DonationFormData & { userId: string }) => {
+			const { data: uploadData, error: uploadError } = await supabase.storage
+				.from("Books-image")
+				.upload(`public/${Date.now()}_${input.image.name}`, input.image);
+
+			if (uploadError) {
+				throw uploadError;
+			}
+
+			const imageUrl = uploadData.path;
+
 			const { data, error } = await supabase.rpc("create_book", {
 				book_data: {
 					title: input.title,
@@ -64,6 +74,7 @@ function NewDonation() {
 					language: input.language,
 					condition: input.condition,
 					tags: input.tags,
+					image_url: imageUrl,
 				},
 			});
 
