@@ -66,7 +66,12 @@ function Messages() {
 									<Avatar
 										src={otherUser.avatar}
 										alt={(otherUser as { name: string }).name}
-										initials={(otherUser as { name: string }).name.charAt(0)}
+										initials={
+											(otherUser as { name: string }).name
+												.split(" ")
+												.map((word) => word[0])
+												.join("") || ""
+										}
 										size="medium"
 									/>
 									<div className="flex-1">

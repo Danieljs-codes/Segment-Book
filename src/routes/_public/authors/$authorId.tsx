@@ -65,7 +65,16 @@ function Author() {
 				<Card>
 					<Card.Header>
 						<div className="flex gap-4 items-center">
-							<Avatar className="size-20" src={books[0]?.donor?.avatar} />
+							<Avatar
+								className="size-20"
+								src={books[0]?.donor?.avatar}
+								initials={
+									books[0]?.donor?.name
+										.split(" ")
+										.map((word) => word[0])
+										.join("") || ""
+								}
+							/>
 							<div>
 								<h2 className="font-bold text-lg mb-1">
 									{books[0]?.donor?.name}

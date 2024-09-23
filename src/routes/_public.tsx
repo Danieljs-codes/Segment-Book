@@ -133,7 +133,7 @@ function Home() {
 									<IconSearch className="size-5" />
 								</Button>
 								<Button size="square-petite" appearance="plain">
-									{theme === 'dark' ? (
+									{theme === "dark" ? (
 										<IconSun className="size-5" />
 									) : (
 										<IconMoon className="size-5" />
@@ -142,7 +142,15 @@ function Home() {
 							</div>
 							<Menu>
 								<Menu.Trigger>
-									<Avatar src={user.avatar} />
+									<Avatar
+										src={user.avatar}
+										initials={
+											user.name
+												.split(" ")
+												.map((word) => word[0])
+												.join("") || ""
+										}
+									/>
 								</Menu.Trigger>
 								<Menu.Content className="min-w-[180px]">
 									<Menu.Item href="/dashboard">
@@ -242,7 +250,15 @@ function Home() {
 								<Menu.Trigger>
 									<div className="flex justify-between">
 										<div className="flex items-center gap-x-3">
-											<Avatar src={user.avatar} />
+											<Avatar
+												src={user.avatar}
+												initials={
+													user.name
+														.split(" ")
+														.map((word) => word[0])
+														.join("") || ""
+												}
+											/>
 											<div>
 												<span className="text-sm font-medium text-fg block -mb-1.5">
 													{user.name}

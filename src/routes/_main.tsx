@@ -160,7 +160,17 @@ function MainLayout() {
 					</Button>
 					<Menu>
 						<Menu.Trigger>
-							<Avatar shape="circle" src={user.avatar} size="medium" />
+							<Avatar
+								initials={
+									user.name
+										.split(" ")
+										.map((word) => word[0])
+										.join("") || ""
+								}
+								shape="circle"
+								src={user.avatar}
+								size="medium"
+							/>
 						</Menu.Trigger>
 						<Menu.Content>
 							<Menu.Item href="/" className="text-sm">

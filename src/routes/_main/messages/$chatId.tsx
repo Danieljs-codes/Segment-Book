@@ -127,6 +127,12 @@ function MessagesChatId() {
 					shape="circle"
 					size="medium"
 					src={participants[0].other_user_avatar}
+					initials={
+						participants[0].other_user_name
+							.split(" ")
+							.map((word) => word[0])
+							.join("") || ""
+					}
 				/>
 				<div>
 					<Heading className="text-center" level={3} tracking="tight">

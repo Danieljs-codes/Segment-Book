@@ -26,7 +26,16 @@ function Authors() {
 				{donors.map((donor) => (
 					<Card key={donor.id}>
 						<Card.Header className="flex flex-row items-center gap-4">
-							<Avatar size="large" src={donor.avatar} />
+							<Avatar
+								size="large"
+								src={donor.avatar}
+								initials={
+									donor.name
+										.split(" ")
+										.map((word) => word[0])
+										.join("") || ""
+								}
+							/>
 							<div>
 								<Card.Title className="text-lg font-bold">
 									{donor.name}
