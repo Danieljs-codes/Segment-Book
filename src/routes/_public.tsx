@@ -132,7 +132,11 @@ function Home() {
 								<Button size="square-petite" appearance="plain">
 									<IconSearch className="size-5" />
 								</Button>
-								<Button size="square-petite" appearance="plain">
+								<Button
+									size="square-petite"
+									onPress={() => setTheme(theme === "dark" ? "light" : "dark")}
+									appearance="plain"
+								>
 									{theme === "dark" ? (
 										<IconSun className="size-5" />
 									) : (
