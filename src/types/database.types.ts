@@ -321,12 +321,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      accept_donation_request_with_chat: {
-        Args: {
-          request_id: string
-        }
-        Returns: undefined
-      }
+      accept_donation_request_with_chat:
+        | {
+            Args: {
+              request_id: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              request_id: string
+              current_user_id: string
+            }
+            Returns: undefined
+          }
       create_book: {
         Args: {
           book_data: Json

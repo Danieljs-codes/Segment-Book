@@ -65,7 +65,6 @@ export const Route = createFileRoute("/_main/notifications")({
 		);
 		return {
 			id: context.session.user.id,
-
 			crumb: "Notifications",
 			title: "Notifications",
 		};
@@ -94,6 +93,7 @@ function Notifications() {
 				"accept_donation_request_with_chat",
 				{
 					request_id: donationRequestId,
+					current_user_id: id,
 				},
 			);
 
@@ -238,7 +238,8 @@ function Notifications() {
 											{notification.content}
 										</p>
 										{notification.type === "book_request" &&
-										notification.donation_request_id ? (
+										notification.donation_request_id &&
+										notification.donation_request?.status === "PENDING" ? (
 											<div className="mt-2 flex items-center gap-2">
 												<Button size="extra-small" intent="secondary">
 													Decline

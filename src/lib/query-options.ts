@@ -229,6 +229,9 @@ export const userNotificationsQueryOptions = (
 						id,
 						name,
 						email
+					),
+					donation_request:donation_requests (
+						status
 					)
 					`,
 					{ count: "exact" },
@@ -321,7 +324,7 @@ export const bookFiltersQueryOptions = () =>
 					`
 					*,
 					donor:users!books_ownerId_fkey(id, name),
-					requests:donation_requests(id)
+					requests:donation_requests(id, status)
 				`,
 					{
 						count: "exact",
@@ -335,8 +338,14 @@ export const bookFiltersQueryOptions = () =>
 				throw new Error(error.message);
 			}
 
-			// Filter books with no requests
-			const filteredData = data?.filter((book) => book.requests.length === 0);
+			// Filter books with no pending or accepted requests
+			const filteredData = data?.filter(
+				(book) =>
+					!book.requests.some(
+						(request) =>
+							request.status === "PENDING" || request.status === "ACCEPTED",
+					),
+			);
 
 			return filteredData;
 		},
