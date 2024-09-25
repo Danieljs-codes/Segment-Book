@@ -37,13 +37,15 @@ function getBadgeIntent(condition: string) {
 
 function Author() {
 	const { authorId } = Route.useParams();
-	const { data: books } = useSuspenseQuery(donorsByIdQueryOptions(authorId));
+	const { data: users } = useSuspenseQuery(donorsByIdQueryOptions(authorId));
 
-	const booksListedButNotDonated = books.filter(
+	const booksListedButNotDonated = users.books.filter(
 		(book) => book.isDonated === false,
 	);
 
-	const booksListedAndDonated = books.filter((book) => book.isDonated === true);
+	const booksListedAndDonated = users.books.filter(
+		(book) => book.isDonated === true,
+	);
 
 	return (
 		<div>
@@ -67,25 +69,24 @@ function Author() {
 						<div className="flex gap-4 items-center">
 							<Avatar
 								className="size-20"
-								src={books[0]?.donor?.avatar}
+								src={users?.avatar}
 								initials={
-									books[0]?.donor?.name
+									users?.name
 										.split(" ")
 										.map((word) => word[0])
 										.join("") || ""
 								}
 							/>
 							<div>
-								<h2 className="font-bold text-lg mb-1">
-									{books[0]?.donor?.name}
-								</h2>
+								<h2 className="font-bold text-lg mb-1">{users?.name}</h2>
 								<Badge intent="success" shape="circle">
 									Joined:{" "}
-									{books[0]?.donor?.createdAt
-										? new Date(books[0].donor.createdAt).toLocaleDateString(
-												"en-US",
-												{ year: "numeric", month: "short", day: "numeric" },
-											)
+									{users?.createdAt
+										? new Date(users.createdAt).toLocaleDateString("en-US", {
+												year: "numeric",
+												month: "short",
+												day: "numeric",
+											})
 										: "Unknown"}
 								</Badge>
 							</div>

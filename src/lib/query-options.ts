@@ -421,13 +421,14 @@ export const donorsByIdQueryOptions = (userId: string) =>
 		queryKey: ["donors-by-id", userId],
 		queryFn: async () => {
 			const { data, error } = await supabase
-				.from("books")
+				.from("users")
 				.select(`
 					*,
-					donor:users!books_ownerId_fkey(id, name, email, createdAt, avatar)
+					books:books!books_ownerId_fkey(*)
 				`)
-				.eq("ownerId", userId)
-				.order("createdAt", { ascending: false });
+				.eq("id", userId)
+				.limit(1)
+				.single();
 
 			if (error) {
 				console.error("Error fetching donors by id:", error);
